@@ -18,8 +18,8 @@
           <h1>泰國度假投票系統</h1>
         </div>
         <nav class="nav-tabs">
-          <button class="nav-tab active" data-tab="voting-content">🏝️ 我要投票</button>
-          <button class="nav-tab" data-tab="stats-content">📊 目前戰況</button>
+          <button class="nav-tab active" data-tab="voting-content" onclick="window.switchTab('voting-content', event)">🏝️ 我要投票</button>
+          <button class="nav-tab" data-tab="stats-content" onclick="window.switchTab('stats-content', event)">📊 目前戰況</button>
         </nav>
         <div id="user-info" class="user-info card hidden">
           <span class="user-greeting">👋 哈囉, <strong id="current-user-name">...</strong></span>
