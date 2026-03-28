@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pattaya 2026 泰國行 | 住宿投票系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-content container">
+        <div class="logo-area">
+          <span class="badge">PATAYA 2026</span>
+          <h1>泰國度假投票系統</h1>
+        </div>
+        <div id="user-info" class="user-info card hidden">
+          <span class="user-greeting">👋 哈囉, <strong id="current-user-name">...</strong></span>
+          <div class="vote-pills">
+            <span class="pill-label">我的票數：</span>
+            <div id="vote-dots" class="dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="auth-error" class="error-section hidden">
+        <div class="error-card">
+          <h2>🚫 身份識別失敗</h2>
+          <p>請確認你的專屬連結是否正確，或聯絡主辦人 Evan。</p>
+        </div>
+      </section>
+
+      <div id="voting-content" class="hidden">
+        <section class="voting-section">
+          <div class="section-header">
+            <h2 class="section-title">🏠 Airbnb 區 <small>獨棟別墅、大空間首選</small></h2>
+          </div>
+          <div id="airbnb-list" class="accommodation-grid">
+            <!-- Airbnb 卡片將由 JS 動態生成 -->
+            <div class="loading-placeholder">載入中...</div>
+          </div>
+        </section>
+
+        <section class="voting-section">
+          <div class="section-header">
+            <h2 class="section-title">🏨 度假村區 <small>飯店式服務、設施大玩家</small></h2>
+          </div>
+          <div id="resort-list" class="accommodation-grid">
+            <!-- 度假村卡片將由 JS 動態生成 -->
+            <div class="loading-placeholder">載入中...</div>
+          </div>
+        </section>
+      </div>
+
+      <div id="global-stats" class="stats-footer card">
+        <h3>目前投票進度</h3>
+        <div id="stats-summary">
+          <!-- 統計總結 -->
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Pattaya Trip Team | Designed for the Boys</p>
+    </footer>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
