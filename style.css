@@ -55,6 +55,37 @@ header::before {
   filter: blur(40px);
 }
 
+/* Nav Tabs */
+.nav-tabs {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.nav-tab {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 25px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: var(--transition);
+  font-size: 0.9rem;
+}
+
+.nav-tab.active {
+  background: var(--white);
+  color: var(--primary);
+  border-color: var(--white);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.nav-tab:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .logo-area .badge {
   display: inline-block;
   background: var(--secondary);
@@ -262,6 +293,84 @@ header::before {
 .stat-label {
   font-size: 0.75rem;
   color: #888;
+}
+
+/* User Progress Grid */
+.user-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.user-progress-card {
+  background: var(--white);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  border: 1px solid #eee;
+}
+
+.user-progress-name {
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.user-vote-item {
+  font-size: 0.85rem;
+  color: #666;
+  padding: 5px 0;
+  border-top: 1px dotted #ccc;
+}
+
+.user-vote-item.empty { color: #aaa; font-style: italic; }
+
+.status-pill {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 800;
+}
+
+.status-check { color: #27ae60; }
+.status-waiting { color: #f39c12; }
+
+/* Ranking List */
+.ranking-list {
+  padding: 20px;
+}
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.rank-number {
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: var(--secondary);
+  min-width: 40px;
+}
+
+.rank-info { flex: 1; }
+
+.rank-bar-bg {
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.rank-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 10px;
+  transition: width 1s ease-out;
 }
 
 /* Footer */

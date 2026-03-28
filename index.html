@@ -17,6 +17,10 @@
           <span class="badge">PATAYA 2026</span>
           <h1>泰國度假投票系統</h1>
         </div>
+        <nav class="nav-tabs">
+          <button class="nav-tab active" data-tab="voting-content">🏝️ 我要投票</button>
+          <button class="nav-tab" data-tab="stats-content">📊 目前戰況</button>
+        </nav>
         <div id="user-info" class="user-info card hidden">
           <span class="user-greeting">👋 哈囉, <strong id="current-user-name">...</strong></span>
           <div class="vote-pills">
@@ -56,6 +60,28 @@
           <div id="resort-list" class="accommodation-grid">
             <!-- 度假村卡片將由 JS 動態生成 -->
             <div class="loading-placeholder">載入中...</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 即時戰況分頁 -->
+      <div id="stats-content" class="hidden">
+        <section class="voting-section">
+          <div class="section-header">
+            <h2 class="section-title">📊 成員投票現況 <small>看看誰還沒投！</small></h2>
+          </div>
+          <div id="user-progress-list" class="user-progress-grid">
+            <!-- 由 JS 動態生成每個人投票詳情 -->
+            <div class="loading-placeholder">載入中...</div>
+          </div>
+        </section>
+
+        <section class="voting-section">
+          <div class="section-header">
+            <h2 class="section-title">🏁 飯店總排名 <small>目前最高得票者</small></h2>
+          </div>
+          <div id="hotel-rankings" class="ranking-list card">
+            <!-- 排名資料 -->
           </div>
         </section>
       </div>
