@@ -1,7 +1,6 @@
 // 1. 初始化 Supabase
-// 請將下方的 URL 與 KEY 替換為你在 Supabase Project Settings > API 找到的資訊
-const SUPABASE_URL = 'https://gboiygwokbadoatrnyvy.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_s3WmzNLCZSX1BuCExb7QVQ_eq9GOAtb';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 // 全域狀態
