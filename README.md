@@ -17,19 +17,14 @@
 2.  啟動網頁：`npm run dev`
 3.  打開瀏覽器看到的會是「錯誤訊息」，因為你必須帶入專屬連結 (見下方)。
 
-### 3. 專屬投票連結清單
-請將下面的網址中的 `YOUR_URL` 換成你部署後的 GitHub Pages 網址 (或 `localhost:5173` 作為測試用)。
+### 3. 專屬投票連結組合方式
+請根據你在 `supabase_setup.sql` 裡面設定的成員姓名與專屬 Key 進行拼接。
 
-| 成員 | 專屬密鑰 | 測試用網址 (範例) |
-| :--- | :--- | :--- |
-| **Evan** | `E821` | `YOUR_URL/?u=Evan&k=E821` |
-| **Johnshon** | `J402` | `YOUR_URL/?u=Johnshon&k=J402` |
-| **Steven** | `S559` | `YOUR_URL/?u=Steven&k=S559` |
-| **Sunny** | `N221` | `YOUR_URL/?u=Sunny&k=N221` |
-| **Jeffrey** | `Y883` | `YOUR_URL/?u=Jeffrey&k=Y883` |
-| **Tsim** | `T110` | `YOUR_URL/?u=Tsim&k=T110` |
-| **Wayne** | `W774` | `YOUR_URL/?u=Wayne&k=W774` |
-| **Tom** | `M932` | `YOUR_URL/?u=Tom&k=M932` |
+公式如下：
+`https://goodjobhot401.github.io/pataya-trip/?u=[姓名]&k=[密鑰]`
+
+例如：`.../?u=Evan&k=E821`
+或是你在本地開發時用：`localhost:5173/?u=Evan&k=E821`
 
 ---
 

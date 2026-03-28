@@ -1,5 +1,6 @@
-# 忽略本地依賴與編譯暫存（絕對不可以 Push 到 GitHub！）
+# 忽略本地依賴與資料庫敏感資訊
 node_modules/
+supabase_setup.sql
 .vite/
 dist/
 dist-ssr/
