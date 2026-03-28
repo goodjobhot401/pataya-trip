@@ -19,32 +19,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userName = params.get('u');
     const userKey = params.get('k');
 
+    // 啟動身分驗證
     if (userName && userKey) {
         await handleLogin(userName, userKey);
-        setupTabs();
     } else {
         showAuthError('請使用你的專屬連結進入網站。');
     }
+    
+    // 無論是否登入成功，都先初始化 Tab (或是讓它在登入成功後更穩定運行)
+    setupTabs();
 });
 
-// 2.5 設置分頁切換
+// 2.5 設置分頁切換 (優化手機觸發)
 function setupTabs() {
     const tabs = document.querySelectorAll('.nav-tab');
     tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
+        // 同時支援 click 確保反應速度
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
             const target = tab.getAttribute('data-tab');
+            console.log('Tab clicked:', target);
             
-            // UI 切換
+            // 1. 先做 UI 切換 (避免卡頓)
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
 
-            // 內容切換
             document.getElementById('voting-content').classList.add('hidden');
             document.getElementById('stats-content').classList.add('hidden');
             document.getElementById(target).classList.remove('hidden');
 
-            if (target === 'stats-content') {
-                refreshData(); // 切換到戰況分頁時刷新數據
+            // 2. 再非同步去拉資料
+            if (target === 'stats-content' && currentUser) {
+                setTimeout(() => refreshData(), 10);
             }
         });
     });
