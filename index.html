@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pattaya 2026 泰國行 | 住宿投票系統</title>
+  <title>Pattaya 2026 0710-0713 輔大廣告20屆男子泰國行</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
   <div id="app">
     <header>
@@ -18,8 +20,12 @@
           <h1>泰國度假投票系統</h1>
         </div>
         <nav class="nav-tabs">
-          <button class="nav-tab active" data-tab="voting-content" onclick="window.switchTab('voting-content', event)">🏝️ 我要投票</button>
-          <button class="nav-tab" data-tab="stats-content" onclick="window.switchTab('stats-content', event)">📊 目前戰況</button>
+          <button class="nav-tab active" data-tab="voting-content"
+            onclick="window.switchTab('voting-content', event)">🏝️ 我要投票</button>
+          <button class="nav-tab" data-tab="stats-content" onclick="window.switchTab('stats-content', event)">📊
+            目前戰況</button>
+          <button class="nav-tab" data-tab="expense-content" onclick="window.switchTab('expense-content', event)">💰
+            代付支出</button>
         </nav>
         <div id="user-info" class="user-info card hidden">
           <span class="user-greeting">👋 哈囉, <strong id="current-user-name">...</strong></span>
@@ -86,6 +92,46 @@
         </section>
       </div>
 
+      <!-- 代付支出分頁 -->
+      <div id="expense-content" class="hidden">
+        <div class="expense-actions">
+          <button class="btn btn-primary" onclick="window.openExpenseModal()">➕ 新增支出</button>
+        </div>
+
+        <div class="expense-grid">
+          <!-- 結算總覽卡片 -->
+          <section class="voting-section">
+            <div class="section-header">
+              <h2 class="section-title">⚖️ 結算總覽 <small>即時計算誰該給誰</small></h2>
+            </div>
+            <div id="expense-summary" class="card settlement-card">
+              <div class="loading-placeholder">計算中...</div>
+            </div>
+          </section>
+
+          <!-- 個人結帳卡片 -->
+          <section class="voting-section">
+            <div class="section-header">
+              <h2 class="section-title">👤 我的帳務 <small>我需要收回或付出的</small></h2>
+            </div>
+            <div id="personal-settlement" class="card settlement-card">
+              <div class="loading-placeholder">載入中...</div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 支出明細列表 -->
+        <section class="voting-section">
+          <div class="section-header">
+            <h2 class="section-title">🗓️ 支出明細 <small>點擊可編輯或刪除</small></h2>
+          </div>
+          <div id="expense-list" class="expense-list-container">
+            <!-- 支出卡片將由 JS 動態生成 -->
+            <div class="loading-placeholder">載入中...</div>
+          </div>
+        </section>
+      </div>
+
       <div id="global-stats" class="stats-footer card">
         <h3>目前投票進度</h3>
         <div id="stats-summary">
@@ -97,10 +143,57 @@
     <footer>
       <p>&copy; 2026 Pattaya Trip Team | Designed for the Boys</p>
     </footer>
+    <!-- 支出彈出視窗 -->
+    <div id="expense-modal" class="modal hidden">
+      <div class="modal-content card">
+        <h2 id="modal-title">💸 登記支出</h2>
+        <form id="expense-form">
+          <input type="hidden" id="expense-id">
+          <div class="form-group">
+            <label>項目名稱</label>
+            <input type="text" id="item-name" required placeholder="例如：計程車、晚餐">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>金額</label>
+              <input type="number" id="amount" required step="0.01">
+            </div>
+            <div class="form-group">
+              <label>幣別</label>
+              <select id="currency">
+                <option value="TWD">TWD 台幣</option>
+                <option value="THB">THB 泰銖</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>支付者 (誰付的錢？可多選並填金額)</label>
+            <div id="payers-container" class="multi-select-container">
+              <!-- JS 動態生成使用者列表與金額輸入 -->
+            </div>
+          </div>
+          <div class="form-group">
+            <label>分款者 (誰要分這筆錢？可多選)</label>
+            <div id="splitters-container" class="multi-select-container grid-cols-2">
+              <!-- JS 動態生成使用者勾選清單 -->
+            </div>
+          </div>
+          <div class="form-group">
+            <label>備註 (選擇性)</label>
+            <textarea id="remarks" rows="2"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.closeExpenseModal()">取消</button>
+            <button type="submit" class="btn btn-primary">儲存支出</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="./main.js"></script>
 </body>
+
 </html>

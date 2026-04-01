@@ -1,6 +1,6 @@
 # 忽略本地依賴與資料庫敏感資訊
 node_modules/
-supabase_setup.sql
+supabase_sql/
 .vite/
 dist/
 dist-ssr/
