@@ -32,7 +32,7 @@ export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
         });
 
         return `
-            <div class="expense-item card">
+            <div class="expense-item card ${exp.currency}">
                 <div class="expense-main">
                     <div class="expense-info">
                         <div class="expense-header">
@@ -55,8 +55,8 @@ export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
                     ${exp.remarks ? `<div><strong>📝 備註：</strong> ${exp.remarks}</div>` : ''}
                 </div>
                 <div class="expense-actions-row">
-                    <button class="btn-icon btn-edit" data-id="${exp.id}">✏️ 編輯</button>
-                    <button class="btn-icon btn-delete" data-id="${exp.id}">🗑️ 刪除</button>
+                    <button class="btn-icon-styled btn-edit" data-id="${exp.id}">✏️ 編輯</button>
+                    <button class="btn-icon-styled btn-delete" data-id="${exp.id}">🗑️ 刪除</button>
                 </div>
             </div>
         `;

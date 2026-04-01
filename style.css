@@ -407,209 +407,270 @@ footer {
 }
 
 /* --- 代付支出專屬樣式 --- */
-.expense-actions {
+.expense-header-action {
   display: flex;
   justify-content: center;
-  margin: 30px 0;
+  margin-top: 40px;
+  margin-bottom: 30px;
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  padding: 12px 30px;
-  font-size: 1.1rem;
-  box-shadow: 0 10px 20px rgba(45, 82, 115, 0.2);
-}
-
-.expense-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-}
-
-.settlement-card {
-  padding: 25px;
-  background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
-  border-left: 8px solid var(--accent);
-}
-
-.settlement-item {
+.btn-lg {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  border-radius: 50px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px dashed #eee;
+  gap: 12px;
+  box-shadow: 0 15px 30px rgba(45, 82, 115, 0.25);
+  background: linear-gradient(135deg, var(--primary), #3a5c7c);
+  color: white;
 }
 
-.settlement-item:last-child { border-bottom: none; }
-
-.debtor { font-weight: 700; color: var(--secondary); }
-.creditor { font-weight: 700; color: var(--primary); }
-.amount-text { font-family: 'Outfit', monospace; font-weight: 800; font-size: 1.1rem; }
-
-.personal-status {
-  text-align: center;
-  margin-bottom: 20px;
+.btn-lg:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(45, 82, 115, 0.35);
 }
 
-.status-amount {
-  font-size: 2.5rem;
-  font-weight: 900;
-  display: block;
-}
-
-.status-amount.positive { color: #27ae60; }
-.status-amount.negative { color: var(--secondary); }
-.status-amount.zero { color: #888; }
-
-.expense-list-container {
+/* Sub-nav (子分頁)切換器 */
+.sub-nav {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 8px;
+  border-radius: 50px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sub-tab {
+  padding: 10px 25px;
+  border-radius: 50px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sub-tab.active {
+  background: var(--white);
+  color: var(--primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sub-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 支出卡片優化 */
+.expense-item {
+  padding: 25px;
+  border-left: 6px solid var(--primary);
+  margin-bottom: 20px;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.expense-item.TWD { border-left-color: #27ae60; }
+.expense-item.THB { border-left-color: #f39c12; }
+
+.expense-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.expense-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.expense-badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-weight: 800;
+  color: white;
+}
+
+.expense-badge.TWD { background: #27ae60; }
+.expense-badge.THB { background: #f39c12; }
+
+.expense-item-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.expense-meta {
+  font-size: 0.85rem;
+  color: #888;
+  display: flex;
   gap: 15px;
 }
 
-.expense-item-card {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: var(--shadow);
-  border: 1px solid #f0f0f0;
-  transition: var(--transition);
-  cursor: pointer;
-}
-
-.expense-item-card:hover {
-  border-color: var(--primary);
-  transform: translateX(5px);
-}
-
-.expense-date {
-  font-size: 0.8rem;
-  color: #888;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 60px;
-}
-
-.expense-date .day { font-size: 1.2rem; font-weight: 800; color: var(--text); }
-
-.expense-info h4 { margin: 0; font-size: 1.1rem; }
-.expense-info .payers-label { font-size: 0.8rem; color: #666; margin-top: 4px; }
-.expense-info .splitters-label { font-size: 0.8rem; color: #999; }
-
-.expense-amount-area {
-  text-align: right;
-}
-
-.expense-price {
+.expense-amount {
+  font-size: 1.6rem;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-family: 'Outfit', sans-serif;
   color: var(--primary);
 }
 
-.expense-currency { font-size: 0.7rem; color: #888; margin-left: 2px; }
+.expense-divider {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 15px 0;
+}
 
-/* Modal Styles */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
+.expense-details {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.8;
+}
+
+.expense-actions-row {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.modal-content {
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 40px;
-  animation: modalIn 0.3s ease-out;
-}
-
-@keyframes modalIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.modal-content h2 { margin-bottom: 25px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; color: #555; }
-
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-input[type="text"], input[type="number"], select, textarea {
-  width: 100%;
-  padding: 12px 15px;
-  border-radius: 10px;
-  border: 2px solid #eee;
-  font-family: inherit;
-  font-size: 1rem;
+.btn-icon-styled {
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
   transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  background: #fdfdfd;
+.btn-edit {
+  background: #f0f7ff;
+  color: #2d5273;
+  border-color: #d0e4f5;
 }
 
-.multi-select-container {
+.btn-edit:hover {
+  background: #2d5273;
+  color: white;
+}
+
+.btn-delete {
+  background: #fff5f5;
+  color: #e53e3e;
+  border-color: #fed7d7;
+}
+
+.btn-delete:hover {
+  background: #e53e3e;
+  color: white;
+}
+
+/* 結算樣式優化 */
+.settlement-blocks {
   display: grid;
-  gap: 10px;
-  background: #f8f9fa;
-  padding: 15px;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.settlement-column h4 {
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 1.1rem;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+}
+
+.settle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(0,0,0,0.02);
   border-radius: 12px;
+  margin-bottom: 10px;
 }
 
-.grid-cols-2 { grid-template-columns: 1fr 1fr; }
+.settle-name { font-weight: 700; }
+.settle-name.debtor { color: var(--secondary); }
+.settle-name.creditor { color: #27ae60; }
+.settle-arrow { color: #aaa; font-size: 0.8rem; }
+.settle-amount { margin-left: auto; font-weight: 800; font-family: 'Outfit'; }
 
-.payer-row {
+.personal-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.personal-pill {
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.personal-pill.status-check { background: #e3f9eb; color: #1e8449; }
+.personal-pill.status-waiting { background: #fff4e5; color: #b7791f; }
+
+.pill-value { display: block; font-size: 1.5rem; font-weight: 800; margin-top: 5px; }
+
+.settle-tip { margin-top: 20px; font-size: 0.85rem; color: #888; text-align: center; font-style: italic; }
+
+/* Modal 優化 */
+.modal-content {
+  border: none;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+.payer-input-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+  background: white;
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.payer-input-row .user-label { flex: 1; font-weight: 700; }
+.payer-input-row .payer-amount-input { width: 120px; border: none; background: #f8f9fa; text-align: right; }
+
+.splitter-checkbox {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.payer-row label { margin-bottom: 0; flex: 1; font-weight: 400; }
-.payer-row input[type="number"] { width: 120px; padding: 8px 10px; font-size: 0.9rem; }
-
-.splitter-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 1px solid #eee;
   cursor: pointer;
 }
 
-.splitter-item input { width: auto; }
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 30px;
-}
-
-.btn-secondary { background: #eee; color: #666; }
-.btn-secondary:hover { background: #ddd; }
+.splitter-checkbox input { width: auto; }
 
 .empty-state { text-align: center; padding: 40px; color: #aaa; font-style: italic; }
 
-@media (max-width: 600px) {
-  .modal-content { padding: 25px; }
-  .grid-cols-2 { grid-template-columns: 1fr; }
-  .expense-item-card { grid-template-columns: 1fr auto; }
-  .expense-date { display: none; }
+@media (max-width: 768px) {
+  .settlement-blocks, .personal-summary-grid { grid-template-columns: 1fr; }
+  .expense-main { flex-direction: column; }
+  .expense-amount { margin-top: 10px; }
+  .sub-nav { width: 90%; }
+  .sub-tab { padding: 10px 15px; font-size: 0.9rem; }
 }

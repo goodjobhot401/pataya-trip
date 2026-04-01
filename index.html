@@ -17,7 +17,7 @@
       <div class="header-content container">
         <div class="logo-area">
           <span class="badge">PATAYA 2026</span>
-          <h1>泰國度假投票系統</h1>
+          <h1>Pattaya 2026 0710-0713 輔大廣告20屆男子泰國行</h1>
         </div>
         <nav class="nav-tabs">
           <button class="nav-tab active" data-tab="voting-content"
@@ -94,39 +94,49 @@
 
       <!-- 代付支出分頁 -->
       <div id="expense-content" class="hidden">
-        <div class="expense-actions">
-          <button class="btn btn-primary" onclick="window.openExpenseModal()">➕ 新增支出</button>
+        <!-- 頂部操作區 -->
+        <div class="expense-header-action">
+          <button class="btn btn-primary btn-lg" onclick="window.openExpenseModal()">
+            <span class="btn-icon">➕</span> 新增一筆支出
+          </button>
         </div>
 
-        <div class="expense-grid">
-          <!-- 結算總覽卡片 -->
-          <section class="voting-section">
-            <div class="section-header">
-              <h2 class="section-title">⚖️ 結算總覽 <small>即時計算誰該給誰</small></h2>
-            </div>
-            <div id="expense-summary" class="card settlement-card">
-              <div class="loading-placeholder">計算中...</div>
-            </div>
-          </section>
-
-          <!-- 個人結帳卡片 -->
-          <section class="voting-section">
-            <div class="section-header">
-              <h2 class="section-title">👤 我的帳務 <small>我需要收回或付出的</small></h2>
-            </div>
-            <div id="personal-settlement" class="card settlement-card">
-              <div class="loading-placeholder">載入中...</div>
-            </div>
-          </section>
+        <!-- 支出分頁內的子 Tab 切換 -->
+        <div class="sub-nav">
+          <button class="sub-tab active" data-subtab="expense-list-section"
+            onclick="window.switchSubTab('expense-list-section', event)">📝 支出明細</button>
+          <button class="sub-tab" data-subtab="expense-summary-section"
+            onclick="window.switchSubTab('expense-summary-section', event)">⚖️ 結算總覽</button>
+          <button class="sub-tab" data-subtab="personal-settlement-section"
+            onclick="window.switchSubTab('personal-settlement-section', event)">👤 我的帳務</button>
         </div>
 
-        <!-- 支出明細列表 -->
-        <section class="voting-section">
+        <!-- 1. 支出明細列表 (預設顯示) -->
+        <section id="expense-list-section" class="sub-content">
           <div class="section-header">
-            <h2 class="section-title">🗓️ 支出明細 <small>點擊可編輯或刪除</small></h2>
+            <h2 class="section-title">🗓️ 支出明細 <small>點擊按鈕可進行編輯或刪除</small></h2>
           </div>
           <div id="expense-list" class="expense-list-container">
-            <!-- 支出卡片將由 JS 動態生成 -->
+            <div class="loading-placeholder">載入中...</div>
+          </div>
+        </section>
+
+        <!-- 2. 結算總覽 -->
+        <section id="expense-summary-section" class="sub-content hidden">
+          <div class="section-header">
+            <h2 class="section-title">⚖️ 結算總覽 <small>即時計算最簡化還款路徑</small></h2>
+          </div>
+          <div id="expense-summary" class="card settlement-card">
+            <div class="loading-placeholder">計算中...</div>
+          </div>
+        </section>
+
+        <!-- 3. 個人結帳 -->
+        <section id="personal-settlement-section" class="sub-content hidden">
+          <div class="section-header">
+            <h2 class="section-title">👤 個人帳務 <small>我在這趟旅行中的資產淨值</small></h2>
+          </div>
+          <div id="personal-settlement" class="card settlement-card">
             <div class="loading-placeholder">載入中...</div>
           </div>
         </section>

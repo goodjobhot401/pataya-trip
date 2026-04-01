@@ -165,7 +165,30 @@ function setupTabs() {
         const targetEl = document.getElementById(target);
         if (targetEl) targetEl.classList.remove('hidden');
 
+        // --- 優化：如果是支出分頁，隱藏底部的投票統計 ---
+        const globalStats = document.getElementById('global-stats');
+        if (target === 'expense-content') {
+            globalStats.classList.add('hidden');
+        } else {
+            globalStats.classList.remove('hidden');
+        }
+
         if (currentUser) refreshData();
+    };
+
+    // --- 新增：子分頁切換邏輯 (支出分頁專用) ---
+    window.switchSubTab = function(targetSectionId, event) {
+        if (event) event.preventDefault();
+
+        // 切換按鈕樣式
+        const subTabs = document.querySelectorAll('.sub-tab');
+        subTabs.forEach(t => t.classList.remove('active'));
+        if (event) event.currentTarget.classList.add('active');
+
+        // 切換內容顯示
+        const subContents = document.querySelectorAll('.sub-content');
+        subContents.forEach(c => c.classList.add('hidden'));
+        document.getElementById(targetSectionId).classList.remove('hidden');
     };
 }
 
