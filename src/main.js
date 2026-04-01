@@ -99,7 +99,7 @@ function renderStatsTab(allVotes) {
 function renderExpensesTab() {
     renderExpenseList(allExpenses, currentUser.id, handleEditExpense, handleDeleteExpense);
     renderSettlementSummary(allExpenses, allUsers);
-    renderPersonalSettlement(allExpenses, currentUser.id);
+    renderPersonalSettlement(allExpenses, allUsers, currentUser.id);
 }
 
 // 註冊全域 UI 函式 (供 HTML onclick 調用)

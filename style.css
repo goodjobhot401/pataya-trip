@@ -438,28 +438,32 @@ footer {
 .expense-header-action {
   display: flex;
   justify-content: center;
-  margin-top: 50px;
-  /* 增加頂部間距 */
-  margin-bottom: 40px;
-  /* 增加底部間距 */
+  margin-top: 70px;
+  /* 顯著增加頂部間距，遠離 Header */
+  margin-bottom: 50px;
 }
 
 .btn-lg {
-  padding: 18px 45px;
-  /* 增加 Padding */
-  font-size: 1.25rem;
+  padding: 20px 50px;
+  font-size: 1.3rem;
   border-radius: 60px;
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 15px 30px rgba(45, 82, 115, 0.25);
-  background: linear-gradient(135deg, var(--primary), #3a5c7c);
-  color: white;
+  /* 改為鮮明的亮橘/黃色漸層 */
+  background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%);
+  color: #1a3a5a;
+  /* 深藍色文字，對比更好看 */
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 10px 25px rgba(255, 140, 0, 0.3);
+  cursor: pointer;
+  transition: var(--transition);
 }
 
 .btn-lg:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(45, 82, 115, 0.35);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 35px rgba(255, 140, 0, 0.4);
 }
 
 /* Sub-nav 切換器 */
@@ -467,12 +471,9 @@ footer {
   display: flex;
   justify-content: center;
   gap: 15px;
-  /* 增加按鈕間距 */
   margin-bottom: 60px;
-  /* 增加與下方內容的間距 */
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.05);
   padding: 10px;
-  /* 增加容器內部 Padding */
   border-radius: 60px;
   width: fit-content;
   margin-left: auto;
@@ -481,7 +482,6 @@ footer {
 
 .sub-tab {
   padding: 12px 35px;
-  /* 增加按鈕內部 Padding */
   border-radius: 50px;
   border: none;
   background: transparent;
@@ -500,7 +500,6 @@ footer {
 .sub-content {
   animation: fadeIn 0.4s ease-out;
   padding-bottom: 40px;
-  /* 底部留白 */
 }
 
 @keyframes fadeIn {
@@ -518,7 +517,6 @@ footer {
 /* 支出卡片優化 */
 .expense-item {
   padding: 30px;
-  /* 增加內部 Padding */
   border-left: 8px solid var(--primary);
   margin-bottom: 25px;
   background: white;
@@ -604,7 +602,6 @@ footer {
 
 .btn-icon-styled {
   padding: 10px 22px;
-  /* 增加按鈕 Padding */
   border-radius: 50px;
   font-size: 0.9rem;
   font-weight: 700;
@@ -643,7 +640,6 @@ footer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 35px;
-  /* 增加欄位間距 */
 }
 
 .settlement-column h4 {
@@ -659,7 +655,6 @@ footer {
   align-items: center;
   gap: 15px;
   padding: 15px 20px;
-  /* 增加內容 Padding */
   background: rgba(0, 0, 0, 0.02);
   border-radius: 15px;
   margin-bottom: 12px;
@@ -698,7 +693,6 @@ footer {
 
 .personal-pill {
   padding: 30px 20px;
-  /* 增加高度 */
   border-radius: 20px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
@@ -729,36 +723,135 @@ footer {
   font-style: italic;
 }
 
-/* Modal 優化 */
+/* Modal 優化 - 鎖定寬度不跑版 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 25, 41, 0.7);
+  /* 深色遮罩增加對比 */
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
 .modal-content {
-  border: none;
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.35);
-  padding: 45px;
-  /* 增加 Modal Padding */
+  width: 100%;
+  max-width: 550px;
+  /* 嚴格限制最大寬度，避免兩側展開 */
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 40px;
+  border-radius: 30px;
+  background: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+  from {
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  margin-bottom: 25px;
+  font-weight: 800;
+  color: #1a3a5a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  color: #2d5273;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 2px solid #e0e6ed;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: var(--transition);
+  background: #fcfdfe;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #FF8C00;
+  /* 使用按鈕的亮色 */
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1);
+}
+
+.multi-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f5f7fa;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.grid-cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .payer-input-row {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 15px;
+  gap: 15px;
   background: white;
-  padding: 12px 20px;
+  padding: 12px 15px;
   border-radius: 12px;
-  border: 1px solid #eee;
+  border: 1px solid #e0e6ed;
 }
 
 .payer-input-row .user-label {
   flex: 1;
   font-weight: 700;
-  font-size: 1.1rem;
+  color: #1a3a5a;
 }
 
 .payer-input-row .payer-amount-input {
-  width: 140px;
-  padding: 10px;
-  font-size: 1.1rem;
-  border: 1px solid #f0f0f0;
+  width: 100px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  border: 1px solid #e0e6ed;
   border-radius: 8px;
   text-align: right;
 }
@@ -766,13 +859,14 @@ footer {
 .splitter-checkbox {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: white;
-  padding: 12px 20px;
+  padding: 12px 15px;
   border-radius: 12px;
-  border: 1px solid #eee;
+  border: 1px solid #e0e6ed;
   cursor: pointer;
   font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .empty-state {
@@ -784,18 +878,18 @@ footer {
 }
 
 @media (max-width: 768px) {
+  .modal-content {
+    max-width: 95%;
+    padding: 25px;
+  }
 
   .settlement-blocks,
   .personal-summary-grid {
     grid-template-columns: 1fr;
   }
 
-  .expense-main {
-    flex-direction: column;
-  }
-
-  .expense-amount {
-    margin-top: 15px;
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
   }
 
   .sub-nav {
@@ -805,7 +899,7 @@ footer {
 
   .sub-tab {
     padding: 10px 20px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     flex: 1;
     text-align: center;
   }
