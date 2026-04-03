@@ -74,7 +74,7 @@
       <div id="stats-content" class="hidden">
         <section class="voting-section">
           <div class="section-header">
-            <h2 class="section-title">📊 成員投票現況 <small>看看誰還沒投！</small></h2>
+            <h2 class="section-title">📊 成員投票現況</h2>
           </div>
           <div id="user-progress-list" class="user-progress-grid">
             <!-- 由 JS 動態生成每個人投票詳情 -->
@@ -84,7 +84,7 @@
 
         <section class="voting-section">
           <div class="section-header">
-            <h2 class="section-title">🏁 飯店總排名 <small>目前最高得票者</small></h2>
+            <h2 class="section-title">🏁 飯店總排名</h2>
           </div>
           <div id="hotel-rankings" class="ranking-list card">
             <!-- 排名資料 -->
@@ -121,10 +121,15 @@
           </div>
         </section>
 
+        <!-- 匯率設定區域 (在結算與個人帳務顯示) -->
+        <div id="exchange-rate-container" class="sub-content hidden" style="margin-bottom: 20px;">
+          <!-- JS 動態生成匯率卡片 -->
+        </div>
+
         <!-- 2. 結算總覽 -->
         <section id="expense-summary-section" class="sub-content hidden">
           <div class="section-header">
-            <h2 class="section-title">⚖️ 結算總覽 <small>即時計算最簡化還款路徑</small></h2>
+            <h2 class="section-title">⚖️ 結算總覽</h2>
           </div>
           <div id="expense-summary" class="card settlement-card">
             <div class="loading-placeholder">計算中...</div>
@@ -171,8 +176,7 @@
             <div class="form-group">
               <label>幣別</label>
               <select id="currency">
-                <option value="TWD">TWD 台幣</option>
-                <option value="THB">THB 泰銖</option>
+                <option value="">載入匯率中...</option>
               </select>
             </div>
           </div>
@@ -189,7 +193,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label>備註 (選擇性)</label>
+            <label>備註</label>
             <textarea id="remarks" rows="2"></textarea>
           </div>
           <div class="modal-actions">

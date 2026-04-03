@@ -904,3 +904,229 @@ textarea:focus {
     text-align: center;
   }
 }
+/* --- 匯率與統一結算新樣式 --- */
+.exchange-rate-card {
+  padding: 25px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+  border-left: 8px solid var(--accent);
+  margin-bottom: 30px;
+}
+
+.rate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rate-display {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 15px;
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.rate-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.rate-label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 700;
+}
+
+.rate-val {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.rate-separator {
+  font-size: 1.5rem;
+  color: #ddd;
+}
+
+.rate-edit-form {
+  padding: 15px;
+  background: #f0f4f8;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-group-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.input-group-inline input {
+  width: 120px !important;
+  padding: 8px 12px !important;
+}
+
+.rate-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-secondary-lite {
+  padding: 6px 15px;
+  border-radius: 50px;
+  background: transparent;
+  border: 1px solid #ddd;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-primary-lite {
+  padding: 8px 20px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-ghost {
+  padding: 8px 20px;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+}
+
+.rate-tip {
+  margin-top: 15px;
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* 統一結算欄位 */
+.unified-column {
+  background: linear-gradient(135deg, #fffcf5 0%, #fff8e6 100%);
+  border: 2px solid #ffefc2 !important;
+  padding: 25px !important;
+  border-radius: 20px;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.badge-premium {
+  background: #ff5722;
+  color: white;
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.settle-note {
+  margin-top: 20px;
+  font-size: 0.8rem;
+  color: #b7791f;
+  text-align: right;
+}
+
+.settlement-column-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 個人帳務比較 */
+.settlement-action-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 35px;
+}
+
+.list-title {
+  margin-bottom: 20px;
+  color: #1a3a5a;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.unified-list {
+  background: rgba(255, 140, 0, 0.03);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px dashed #ff8c00;
+}
+
+.personal-pill.premium {
+  background: linear-gradient(135deg, #fff8e6 0%, #fff0c7 100%);
+  border: 2px solid #ffefc2;
+  grid-column: span 2;
+}
+
+.premium-tip {
+  color: #b7791f;
+  background: #fff8e6 !important;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #ffefc2;
+  text-align: left !important;
+}
+
+.settle-row.payout {
+  background: rgba(229, 62, 62, 0.05);
+  border: 1px solid #fed7d7;
+}
+
+.settle-row.collect {
+  background: rgba(39, 174, 96, 0.05);
+  border: 1px solid #c6f6d5;
+}
+
+.settle-main {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settle-status-text {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.icon-payout { color: #e53e3e; }
+.icon-collect { color: #27ae60; }
+
+.settle-row.payout .settle-amount { color: #e53e3e; }
+.settle-row.collect .settle-amount { color: #27ae60; }
+
+@media (max-width: 768px) {
+  .settlement-blocks {
+    grid-template-columns: 1fr;
+  }
+  .settlement-action-comparison {
+    grid-template-columns: 1fr;
+  }
+  .personal-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .personal-pill.premium {
+    grid-column: span 1;
+  }
+}

@@ -2,9 +2,19 @@
 import { handleLogin, getAllUsers } from './services/auth';
 import { fetchAccommodations, fetchUserVotes, fetchAllVotes, castVote, deleteVote } from './services/voting';
 import { fetchExpenses, createExpense, updateExpense, deleteExpense } from './services/expenses';
+import { fetchTripSettings, updateExchangeRates } from './services/settings';
 import { renderAccommodations, updateVoteDots } from './ui/votingUI';
 import { renderStats, renderUserProgress } from './ui/statsUI';
-import { renderExpenseList, renderSettlementSummary, renderPersonalSettlement, initExpenseModal, openExpenseModal, closeExpenseModal, getExpenseFormData } from './ui/expenseUI';
+import { 
+    renderExpenseList, 
+    renderSettlementSummary, 
+    renderPersonalSettlement, 
+    initExpenseModal, 
+    openExpenseModal, 
+    closeExpenseModal, 
+    getExpenseFormData,
+    renderExchangeRateSettings
+} from './ui/expenseUI';
 
 // 全域狀態
 let currentUser = null;
@@ -12,6 +22,7 @@ let currentVotes = [];
 let allAccommodations = [];
 let allUsers = [];
 let allExpenses = [];
+let tripSettings = {};
 
 // 1. 初始化
 document.addEventListener('DOMContentLoaded', async () => {
@@ -57,8 +68,9 @@ async function refreshData() {
     currentVotes = await fetchUserVotes(currentUser.id);
     const allVotes = await fetchAllVotes();
 
-    // 獲取支出
+    // 獲取支出與設定
     allExpenses = await fetchExpenses();
+    tripSettings = await fetchTripSettings();
 
     // 渲染各分頁
     renderVotingTab();
@@ -97,9 +109,22 @@ function renderStatsTab(allVotes) {
 
 // --- 支出邏輯 ---
 function renderExpensesTab() {
+    const rates = tripSettings.exchange_rates;
+    
     renderExpenseList(allExpenses, currentUser.id, handleEditExpense, handleDeleteExpense);
-    renderSettlementSummary(allExpenses, allUsers);
-    renderPersonalSettlement(allExpenses, allUsers, currentUser.id);
+    renderExchangeRateSettings(rates, handleUpdateExchangeRate);
+    renderCurrencyDropdown(rates); // 同步下拉選單幣別
+    renderSettlementSummary(allExpenses, allUsers, rates);
+    renderPersonalSettlement(allExpenses, allUsers, currentUser.id, rates);
+}
+
+async function handleUpdateExchangeRate(newRates) {
+    try {
+        await updateExchangeRates(newRates, currentUser.id);
+        await refreshData();
+    } catch (err) {
+        alert('匯率更新失敗：' + err.message);
+    }
 }
 
 // 註冊全域 UI 函式 (供 HTML onclick 調用)
@@ -189,6 +214,12 @@ function setupTabs() {
         const subContents = document.querySelectorAll('.sub-content');
         subContents.forEach(c => c.classList.add('hidden'));
         document.getElementById(targetSectionId).classList.remove('hidden');
+
+        // --- 特殊邏輯：如果是結算或個人帳務，顯示匯率設定 ---
+        const rateContainer = document.getElementById('exchange-rate-container');
+        if (targetSectionId === 'expense-summary-section' || targetSectionId === 'personal-settlement-section') {
+            rateContainer.classList.remove('hidden');
+        }
     };
 }
 
