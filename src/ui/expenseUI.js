@@ -1,5 +1,33 @@
 import { calculateSettlements, calculateUnifiedSettlement, getPersonalSummaries } from '../utils/settlement';
 
+/**
+ * 根據使用者名稱動態生成唯一且穩定的顏色 (無限擴充且防撞色)
+ */
+function getUserStyle(name) {
+    // 1. 基於名稱計算穩定 Hash
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    // 2. 取得分布均勻的色相 (0-360)
+    const h = Math.abs(hash) % 360;
+    
+    // 3. 設定高品質的 HSL 參數
+    // 背景：高亮度、柔和飽和度 (粉彩色)
+    const bg = `hsl(${h}, 70%, 94%)`;
+    // 文字：低亮度 (深色)、高飽和度
+    const text = `hsl(${h}, 80%, 25%)`;
+    // 邊框：稍微深一點點的背景色
+    const border = `hsl(${h}, 60%, 88%)`;
+    
+    return `background: ${bg}; color: ${text}; border: 1px solid ${border}; padding: 2px 8px; border-radius: 6px; font-weight: 700; margin: 0 2px; white-space: nowrap;`;
+}
+
+function formatUserSpan(name) {
+    return `<span class="user-tag" style="${getUserStyle(name)}">${name}</span>`;
+}
+
 export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
     const listContainer = document.getElementById('expense-list');
     if (!listContainer || expenses.length === 0) {
@@ -10,11 +38,11 @@ export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
     listContainer.innerHTML = expenses.map(exp => {
         const totalAmount = exp.expense_payers.reduce((sum, p) => sum + parseFloat(p.amount), 0);
         const payersText = exp.expense_payers
-            .map(p => `${p.users.name} (${formatCurrency(p.amount, exp.currency)})`)
+            .map(p => `${formatUserSpan(p.users.name)} (${formatCurrency(p.amount, exp.currency)})`)
             .join(', ');
 
         const splittersText = exp.expense_splitters
-            .map(s => s.users.name)
+            .map(s => formatUserSpan(s.users.name))
             .join(', ');
 
         return `
@@ -29,11 +57,11 @@ export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
                             <span class="label">支付者:</span>
                             <span class="value">${payersText}</span>
                         </div>
-                        <div class="detail-row">
+                        <div class="detail-row" style="margin-top: 4px;">
                             <span class="label">分帳者:</span>
                             <span class="value">${splittersText}</span>
                         </div>
-                        ${exp.remarks ? `<div class="detail-row remarks"><span class="value">💬 ${exp.remarks}</span></div>` : ''}
+                        ${exp.remarks ? `<div class="detail-row remarks" style="margin-top: 6px;"><span class="value">💬 ${exp.remarks}</span></div>` : ''}
                     </div>
                 </div>
                 <div class="expense-actions">
@@ -199,12 +227,12 @@ export function renderSettlementSummary(expenses, users, rates, baseCurrency = '
 
     const renderCurrencyBlock = (curr, list) => {
         if (list.length === 0) return `<div class="settle-empty" style="padding: 40px;">目前結算已平衡！✨</div>`;
-
+        
         return list.map(s => `
             <div class="settle-row">
-                <span class="settle-name debtor">${s.from}</span>
+                <span class="settle-name debtor">${formatUserSpan(s.from)}</span>
                 <span class="settle-arrow">➡️ 支付給 ➡️</span>
-                <span class="settle-name creditor">${s.to}</span>
+                <span class="settle-name creditor">${formatUserSpan(s.to)}</span>
                 <span class="settle-amount">${formatCurrency(s.amount, curr)}</span>
             </div>
         `).join('');
@@ -218,7 +246,7 @@ export function renderSettlementSummary(expenses, users, rates, baseCurrency = '
                     <span class="badge-premium">UNIFIED</span>
                 </div>
                 ${renderCurrencyBlock(baseCurrency, unifiedSettlements)}
-                ${rates ? `<p class="settle-note">※ 系統已依匯率自動換算為您選擇的結算幣別 (${baseCurrency}) 進行最簡轉帳計算</p>` : ''}
+                ${rates ? `<p class="settle-note" style="margin-top: 15px;">※ 系統已依匯率自動換算為您選擇的結算幣別 (${baseCurrency}) 進行最簡轉帳計算</p>` : ''}
             </div>
         </div>
     `;
@@ -249,18 +277,18 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates, 
 
     const renderActionList = (actions, title) => {
         if (actions.length === 0) return `<div class="empty-state" style="padding: 40px;">目前此結算區間已平衡！✨</div>`;
-
+        
         return `
             <div class="personal-actions-list unified-list full-width">
                 <h4 class="list-title">${title}</h4>
                 <div class="settle-items">
                     ${actions.map(s => {
-            const isPayOut = s.from === userName;
-            return `
+                        const isPayOut = s.from === userName;
+                        return `
                             <div class="settle-row ${isPayOut ? 'payout' : 'collect'}">
                                 <div class="settle-main">
                                     <span class="settle-status-text">
-                                        ${isPayOut ? `<span class="icon-payout">💸</span> 需支付給 <strong>${s.to}</strong>` : `<span class="icon-collect">💰</span> <strong>${s.from}</strong> 需支付給我`}
+                                        ${isPayOut ? `<span class="icon-payout">💸</span> 需支付給 ${formatUserSpan(s.to)}` : `<span class="icon-collect">💰</span> ${formatUserSpan(s.from)} 需支付給我`}
                                     </span>
                                     <span class="settle-amount">
                                         ${formatCurrency(s.amount, baseCurrency)}
@@ -268,7 +296,7 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates, 
                                 </div>
                             </div>
                         `;
-        }).join('')}
+                    }).join('')}
                 </div>
             </div>
         `;
