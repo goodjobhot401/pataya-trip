@@ -1,4 +1,4 @@
-import { calculateSettlements, calculateUnifiedSettlement, getPersonalSummaries } from '../utils/settlement';
+import { calculateUnifiedSettlement, getPersonalSummaries } from '../utils/settlement';
 
 /**
  * 根據使用者名稱動態生成唯一且穩定的顏色 (金角度優化：最大化顏色區分度)
@@ -14,12 +14,12 @@ function getUserStyle(name, index = 0) {
     // 我們將名字 hash 與一個序號結合，確保分佈更廣
     const goldenAngle = 137.508;
     const h = (Math.abs(hash) + (index * goldenAngle)) % 360;
-    
+
     // 3. 設定高品質的 HSL 參數
     const bg = `hsl(${h}, 75%, 95%)`;
     const text = `hsl(${h}, 85%, 25%)`;
     const border = `hsl(${h}, 70%, 85%)`;
-    
+
     return `background: ${bg}; color: ${text}; border: 1px solid ${border}; padding: 2px 8px; border-radius: 6px; font-weight: 700; margin: 0 2px; white-space: nowrap; font-size: 0.9em;`;
 }
 
@@ -230,7 +230,7 @@ export function renderSettlementSummary(expenses, users, rates, baseCurrency = '
 
     const renderCurrencyBlock = (curr, list) => {
         if (list.length === 0) return `<div class="settle-empty" style="padding: 40px;">目前結算已平衡！✨</div>`;
-        
+
         return list.map(s => `
             <div class="settle-row">
                 <span class="settle-name debtor">${formatUserSpan(s.from)}</span>
@@ -280,14 +280,14 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates, 
 
     const renderActionList = (actions, title) => {
         if (actions.length === 0) return `<div class="empty-state" style="padding: 40px;">目前此結算區間已平衡！✨</div>`;
-        
+
         return `
             <div class="personal-actions-list unified-list full-width">
                 <h4 class="list-title">${title}</h4>
                 <div class="settle-items">
                     ${actions.map(s => {
-                        const isPayOut = s.from === userName;
-                        return `
+            const isPayOut = s.from === userName;
+            return `
                             <div class="settle-row ${isPayOut ? 'payout' : 'collect'}">
                                 <div class="settle-main">
                                     <span class="settle-status-text">
@@ -299,7 +299,7 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates, 
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+        }).join('')}
                 </div>
             </div>
         `;
@@ -347,16 +347,18 @@ export function closeExpenseModal() {
 
 export function getExpenseFormData() {
     const id = document.getElementById('expense-id').value;
-    const item_name = document.getElementById('item-name').value;
-    const amount = parseFloat(document.getElementById('amount').value);
+    const item_name = document.getElementById('item-name').value || '未命名項目';
+    const amountVal = document.getElementById('amount').value;
+    const amount = parseFloat(amountVal) || 0;
     const currency = document.getElementById('currency').value;
-    const remarks = document.getElementById('remarks').value;
+    const remarks = document.getElementById('remarks').value || '';
 
+    // 抓取支付者
     const payers = [];
     document.querySelectorAll('.payer-row').forEach(row => {
         const checkbox = row.querySelector('.payer-checkbox');
         const input = row.querySelector('.payer-amount');
-        if (checkbox.checked) {
+        if (checkbox && checkbox.checked) {
             payers.push({
                 user_id: checkbox.value,
                 amount: parseFloat(input.value) || 0
@@ -364,14 +366,16 @@ export function getExpenseFormData() {
         }
     });
 
+    // 抓取分帳者 (含份數)
     const splitters = [];
-    document.querySelectorAll('.splitter-item').forEach(item => {
-        const checkbox = item.querySelector('.splitter-checkbox');
-        const countInput = item.querySelector('.share-count-input');
-        if (checkbox.checked) {
+    document.querySelectorAll('.splitter-row').forEach(row => {
+        const checkbox = row.querySelector('.splitter-checkbox');
+        const countInput = row.querySelector('.share-count-input');
+        if (checkbox && checkbox.checked) {
+            const count = parseInt(countInput.value) || 1;
             splitters.push({
                 user_id: checkbox.value,
-                share_count: parseInt(countInput.value) || 1
+                share_count: count > 0 ? count : 1
             });
         }
     });
@@ -383,61 +387,63 @@ function renderPayersAndSplitters(users, expense = null) {
     const payersContainer = document.getElementById('payers-container');
     const splittersContainer = document.getElementById('splitters-container');
 
-    // 1. 渲染支付者 (帶標色)
-    payersContainer.innerHTML = users.map((user, idx) => {
+    // 1. 渲染支付者
+    payersContainer.innerHTML = users.map(user => {
         const pData = expense?.expense_payers.find(p => p.user_id === user.id);
         const userTag = formatUserSpan(user.name);
+        const isChecked = !!pData;
         return `
             <div class="payer-row">
                 <label class="checkbox-label">
-                    <input type="checkbox" class="payer-checkbox" value="${user.id}" ${pData ? 'checked' : ''}>
+                    <input type="checkbox" class="payer-checkbox" value="${user.id}" ${isChecked ? 'checked' : ''}>
                     ${userTag}
                 </label>
                 <div class="input-group">
-                    <input type="number" step="any" class="payer-amount" value="${pData ? pData.amount : ''}" placeholder="金額" ${pData ? '' : 'disabled'}>
+                    <input type="number" step="any" class="payer-amount" value="${pData ? pData.amount : ''}" placeholder="金額" ${isChecked ? '' : 'disabled'}>
                 </div>
             </div>
         `;
     }).join('');
 
-    // 2. 渲染分帳者 (新增份數選擇 + 標色)
-    splittersContainer.innerHTML = users.map((user, idx) => {
+    // 2. 渲染分帳者
+    splittersContainer.innerHTML = users.map(user => {
         const sData = expense?.expense_splitters.find(s => s.user_id === user.id);
         const userTag = formatUserSpan(user.name);
+        const isChecked = sData || !expense; // 新增時預設全選
         const count = sData ? (sData.share_count || 1) : 1;
-        const isChecked = sData || (!expense); // 新增時預設全選
 
         return `
-            <div class="splitter-item-row">
+            <div class="splitter-row">
                 <label class="checkbox-label">
                     <input type="checkbox" class="splitter-checkbox" value="${user.id}" ${isChecked ? 'checked' : ''}>
                     ${userTag}
                 </label>
                 <div class="share-counter ${isChecked ? '' : 'hidden'}">
                     <span class="share-label">x</span>
-                    <input type="number" min="1" step="1" class="share-count-input" value="${count}" title="分幾份？(如攜伴)">
+                    <input type="number" min="1" step="1" class="share-count-input" value="${count}">
                 </div>
             </div>
         `;
     }).join('');
 
-    // --- 事件監聽節點 ---
-    
-    // 支付者勾選切換
+    // --- 事件綁定 ---
+
+    // 監聽支付者勾選：連動啟用輸入框
     document.querySelectorAll('.payer-checkbox').forEach(cb => {
         cb.addEventListener('change', (e) => {
             const input = e.target.closest('.payer-row').querySelector('.payer-amount');
             input.disabled = !e.target.checked;
+            // 如果勾選且欄位為空，自動帶入主金額 (方便單人支付)
             if (e.target.checked && !input.value) {
                 input.value = document.getElementById('amount').value || '';
             }
         });
     });
 
-    // 分帳者勾選顯示/隱藏份數輸入
+    // 監聽分帳者勾選：連動顯示份數輸入
     document.querySelectorAll('.splitter-checkbox').forEach(cb => {
         cb.addEventListener('change', (e) => {
-            const counter = e.target.closest('.splitter-item-row').querySelector('.share-counter');
+            const counter = e.target.closest('.splitter-row').querySelector('.share-counter');
             if (e.target.checked) counter.classList.remove('hidden');
             else counter.classList.add('hidden');
         });

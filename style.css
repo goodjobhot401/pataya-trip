@@ -1703,7 +1703,7 @@ textarea:focus {
 }
 
 /* --- Modal 內部選單標色與份數樣式 --- */
-.payer-row, .splitter-item-row {
+.payer-row, .splitter-row {
   display: flex !important;
   align-items: center;
   justify-content: space-between;
@@ -1711,7 +1711,7 @@ textarea:focus {
   border-bottom: 1px solid #f1f5f9;
 }
 
-.payer-row:last-child, .splitter-item-row:last-child {
+.payer-row:last-child, .splitter-row:last-child {
   border-bottom: none;
 }
 
