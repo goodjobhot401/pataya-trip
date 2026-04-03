@@ -13,7 +13,8 @@ import {
     openExpenseModal, 
     closeExpenseModal, 
     getExpenseFormData,
-    renderExchangeRateSettings
+    renderExchangeRateSettings,
+    renderCurrencyDropdown
 } from './ui/expenseUI';
 
 // 全域狀態
@@ -214,12 +215,6 @@ function setupTabs() {
         const subContents = document.querySelectorAll('.sub-content');
         subContents.forEach(c => c.classList.add('hidden'));
         document.getElementById(targetSectionId).classList.remove('hidden');
-
-        // --- 特殊邏輯：如果是結算或個人帳務，顯示匯率設定 ---
-        const rateContainer = document.getElementById('exchange-rate-container');
-        if (targetSectionId === 'expense-summary-section' || targetSectionId === 'personal-settlement-section') {
-            rateContainer.classList.remove('hidden');
-        }
     };
 }
 

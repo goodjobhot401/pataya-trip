@@ -75,38 +75,38 @@ export function renderExchangeRateSettings(rates, onUpdateRate) {
     const container = document.getElementById('exchange-rate-container');
     if (!container) return;
 
-    const rateTWD = rates?.TWD || 1;
     const rateTHB = rates?.THB || 0.95;
 
     container.innerHTML = `
-        <div class="exchange-rate-card card">
-            <div class="rate-header">
-                <h4>💱 當前匯率設定</h4>
-                <button id="btn-edit-rate" class="btn-secondary-lite">编辑匯率</button>
-            </div>
-            <div class="rate-display">
-                <div class="rate-item">
-                    <span class="rate-label">基準貨幣</span>
-                    <span class="rate-val">🇹🇼 1 TWD</span>
+        <div class="global-rate-banner">
+            <div class="rate-banner-content">
+                <div class="rate-status-info">
+                    <span class="rate-badge">SYSTEM CONFIG</span>
+                    <div class="main-rate-text">
+                        <span class="currency-pair">1 TWD = <strong>${rateTHB}</strong> THB</span>
+                        <span class="rate-sync-dot"></span>
+                        <small class="rate-desc">已同步全域結算匯率</small>
+                    </div>
                 </div>
-                <div class="rate-separator">=</div>
-                <div class="rate-item">
-                    <span class="rate-label">對應泰銖</span>
-                    <span class="rate-val">🇹🇭 ${rateTHB} THB</span>
+                <div class="rate-banner-actions">
+                    <button id="btn-edit-rate" class="btn-rate-edit">
+                        <span class="icon">⚙️</span> 編輯參數
+                    </button>
                 </div>
             </div>
-            <div id="rate-edit-form" class="rate-edit-form hidden">
-                <div class="input-group-inline">
-                    <label>1 TWD = </label>
+
+            <div id="rate-edit-form" class="rate-edit-popover hidden">
+                <div class="form-title">⚡ 調整換算參值</div>
+                <div class="input-row">
+                    <span class="input-prefix">1 TWD = </span>
                     <input type="number" id="new-thb-rate" step="0.001" value="${rateTHB}">
-                    <label> THB</label>
+                    <span class="input-suffix"> THB</span>
                 </div>
-                <div class="rate-actions">
-                    <button id="btn-save-rate" class="btn-primary-lite">儲存匯率</button>
-                    <button id="btn-cancel-rate" class="btn-ghost">取消</button>
+                <div class="popover-actions">
+                    <button id="btn-save-rate" class="btn-save-lite">更新並重算</button>
+                    <button id="btn-cancel-rate" class="btn-ghost-lite">取消</button>
                 </div>
             </div>
-            <p class="rate-tip">💡 修改此匯率會即時影響「結算總覽」與「個人帳務」的統一幣別計算。</p>
         </div>
     `;
 
@@ -114,18 +114,13 @@ export function renderExchangeRateSettings(rates, onUpdateRate) {
     const saveBtn = document.getElementById('btn-save-rate');
     const cancelBtn = document.getElementById('btn-cancel-rate');
     const editForm = document.getElementById('rate-edit-form');
-    const display = container.querySelector('.rate-display');
 
     editBtn.addEventListener('click', () => {
-        editForm.classList.remove('hidden');
-        display.classList.add('hidden');
-        editBtn.classList.add('hidden');
+        editForm.classList.toggle('hidden');
     });
 
     cancelBtn.addEventListener('click', () => {
         editForm.classList.add('hidden');
-        display.classList.remove('hidden');
-        editBtn.classList.remove('hidden');
     });
 
     saveBtn.addEventListener('click', async () => {
@@ -136,8 +131,6 @@ export function renderExchangeRateSettings(rates, onUpdateRate) {
         }
         await onUpdateRate({ TWD: 1, THB: newRateVal });
         editForm.classList.add('hidden');
-        display.classList.remove('hidden');
-        editBtn.classList.remove('hidden');
     });
 }
 

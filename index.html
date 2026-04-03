@@ -55,7 +55,7 @@
           </div>
           <div id="airbnb-list" class="accommodation-grid">
             <!-- Airbnb 卡片將由 JS 動態生成 -->
-            <div class="loading-placeholder">載入中...</div>
+            <div class="loading-placeholder">無資料</div>
           </div>
         </section>
 
@@ -65,7 +65,7 @@
           </div>
           <div id="resort-list" class="accommodation-grid">
             <!-- 度假村卡片將由 JS 動態生成 -->
-            <div class="loading-placeholder">載入中...</div>
+            <div class="loading-placeholder">無資料</div>
           </div>
         </section>
       </div>
@@ -78,7 +78,7 @@
           </div>
           <div id="user-progress-list" class="user-progress-grid">
             <!-- 由 JS 動態生成每個人投票詳情 -->
-            <div class="loading-placeholder">載入中...</div>
+            <div class="loading-placeholder">無資料</div>
           </div>
         </section>
 
@@ -94,6 +94,12 @@
 
       <!-- 代付支出分頁 -->
       <div id="expense-content" class="hidden">
+        
+        <!-- 全域匯率設定 (在支出頁面最上方) -->
+        <div id="exchange-rate-container" class="global-rate-banner">
+          <!-- JS 動態生成匯率橫幅 -->
+        </div>
+
         <!-- 頂部操作區 -->
         <div class="expense-header-action">
           <button class="btn btn-primary btn-lg" onclick="window.openExpenseModal()">
@@ -117,14 +123,9 @@
             <h2 class="section-title">🗓️ 支出明細 <small>點擊按鈕可進行編輯或刪除</small></h2>
           </div>
           <div id="expense-list" class="expense-list-container">
-            <div class="loading-placeholder">載入中...</div>
+            <div class="loading-placeholder">無資料</div>
           </div>
         </section>
-
-        <!-- 匯率設定區域 (在結算與個人帳務顯示) -->
-        <div id="exchange-rate-container" class="sub-content hidden" style="margin-bottom: 20px;">
-          <!-- JS 動態生成匯率卡片 -->
-        </div>
 
         <!-- 2. 結算總覽 -->
         <section id="expense-summary-section" class="sub-content hidden">
@@ -132,7 +133,7 @@
             <h2 class="section-title">⚖️ 結算總覽</h2>
           </div>
           <div id="expense-summary" class="card settlement-card">
-            <div class="loading-placeholder">計算中...</div>
+            <div class="loading-placeholder">無資料</div>
           </div>
         </section>
 
@@ -142,7 +143,7 @@
             <h2 class="section-title">👤 個人帳務 <small>我在這趟旅行中的資產淨值</small></h2>
           </div>
           <div id="personal-settlement" class="card settlement-card">
-            <div class="loading-placeholder">載入中...</div>
+            <div class="loading-placeholder">無資料</div>
           </div>
         </section>
       </div>
@@ -176,7 +177,7 @@
             <div class="form-group">
               <label>幣別</label>
               <select id="currency">
-                <option value="">載入匯率中...</option>
+                <option value="">無幣別資料</option>
               </select>
             </div>
           </div>
