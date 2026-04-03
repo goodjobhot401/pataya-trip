@@ -15,7 +15,8 @@ import {
     getExpenseFormData,
     renderExchangeRateSettings,
     renderCurrencyDropdown,
-    renderBaseCurrencySelectors
+    renderBaseCurrencySelectors,
+    renderValidationWarning
 } from './ui/expenseUI';
 
 // 全域狀態
@@ -116,12 +117,13 @@ function renderStatsTab(allVotes) {
 function renderExpensesTab() {
     const rates = tripSettings.exchange_rates;
     
+    // 預先進行資料驗證防呆
+    renderValidationWarning(allExpenses, rates);
+    renderBaseCurrencySelectors(rates, currentBaseCurrency, allExpenses);
+
     renderExpenseList(allExpenses, currentUser.id, handleEditExpense, handleDeleteExpense);
     renderExchangeRateSettings(rates, handleUpdateExchangeRate);
-    renderCurrencyDropdown(rates); // 同步下拉選單幣別
-    
-    // 同步所有的結算基準下拉選單 (結算總覽 與 我的帳務)
-    renderBaseCurrencySelectors(rates, currentBaseCurrency);
+    renderCurrencyDropdown(rates); 
 
     renderSettlementSummary(allExpenses, allUsers, rates, currentBaseCurrency);
     renderPersonalSettlement(allExpenses, allUsers, currentUser.id, rates, currentBaseCurrency);

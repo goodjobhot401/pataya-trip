@@ -1442,3 +1442,102 @@ textarea:focus {
         margin-top: 10px;
     }
 }
+
+/* --- 單一視圖排版優化 --- */
+.settlement-blocks.single-view {
+  display: block;
+}
+
+.full-width {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.personal-summary-grid.single-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.personal-pill.standalone {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  padding: 30px;
+}
+
+.personal-pill.standalone .pill-value {
+  font-size: 2.2rem;
+  margin-top: 10px;
+}
+
+.settlement-action-comparison.single-view {
+  display: block;
+}
+
+.comparison-column.full-width {
+  width: 100%;
+}
+
+/* --- 資料驗證警告條 (Validaiton Alert) --- */
+.validation-alert-bar {
+  background: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 12px;
+  padding: 15px 20px;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+}
+
+.alert-text strong {
+  color: #cf1322;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.alert-text p {
+  color: #434343;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.btn-alert-action {
+  background: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.btn-alert-action:hover {
+  background: #cf1322;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+}
+
+@media (max-width: 650px) {
+  .validation-alert-bar { flex-direction: column; gap: 15px; text-align: center; }
+  .alert-content { flex-direction: column; }
+}
