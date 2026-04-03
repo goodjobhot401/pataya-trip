@@ -1541,3 +1541,130 @@ textarea:focus {
   .validation-alert-bar { flex-direction: column; gap: 15px; text-align: center; }
   .alert-content { flex-direction: column; }
 }
+
+/* --- 修復跑版的支出卡片樣式 --- */
+.expense-card {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: transform 0.2s;
+}
+
+.expense-card:hover {
+  transform: translateY(-2px);
+}
+
+.expense-info {
+  flex: 1;
+}
+
+.expense-main {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 8px;
+}
+
+.expense-amount {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #1a365d;
+  background: #f0f7ff;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.expense-item-name {
+  font-size: 1.1rem;
+  color: #2d3748;
+  margin: 0;
+}
+
+.expense-details {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+/* --- 修復長字串溢出 --- */
+.detail-row {
+  display: flex;
+  gap: 8px;
+  word-break: break-all;
+}
+
+.expense-actions {
+  display: flex;
+  gap: 10px;
+  margin-left: 20px;
+}
+
+/* --- 匯率管理按鈕美化 (避免壓到跑版) --- */
+.btn-rate-mgmt {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  white-space: nowrap; /* 強制不換行 */
+}
+
+.btn-rate-mgmt:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+  color: #2d3748;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 650px) {
+  .expense-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .expense-actions {
+    margin-left: 0;
+    margin-top: 15px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* --- 結算列表細節優化 --- */
+.settle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #fff;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.settle-row:last-child {
+  border-bottom: none;
+}
+
+.settle-name {
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.settle-arrow {
+  font-size: 0.8rem;
+  color: #a0aec0;
+}
+
+.settle-amount {
+  font-weight: 800;
+  color: #38a169;
+  font-size: 1.1rem;
+}
+
+.settle-amount.debt {
+  color: #e53e3e;
+}

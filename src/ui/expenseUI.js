@@ -51,7 +51,7 @@ export function renderExchangeRateSettings(rates, onUpdateRate) {
 
     const rateHtml = `
         <div class="inline-rate-display">
-            <button class="btn-text-edit" id="btn-open-rate-mgmt">⚙️ 幣別/匯率管理</button>
+            <button class="btn-rate-mgmt" id="btn-open-rate-mgmt">⚙️ 匯率管理</button>
         </div>
     `;
 
