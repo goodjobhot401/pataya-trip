@@ -1775,3 +1775,59 @@ textarea:focus {
   color: #94a3b8;
   font-weight: 500;
 }
+
+/* --- 移動端移動端 / Line 瀏覽器 兼容性優化 --- */
+
+/* 1. 停用按鈕與標籤的文字選取，避免快速點擊時跳出選取框 */
+.nav-tab, .sub-tab, .btn, label, .user-tag {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent; /* 消除 iOS 點擊灰影 */
+}
+
+/* 2. 擴大勾選框 label 的點擊熱區 */
+.checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px; /* 增加上下間距讓手指更好按 */
+  margin: -5px -10px; /* 抵銷部分間距，不影響版面但增加感應範圍 */
+  cursor: pointer;
+  width: 100%;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 22px; /* 稍微加大勾選框 */
+  height: 22px;
+  cursor: pointer;
+}
+
+/* 3. 修補 iOS Safari number input 的高度與外觀問題 */
+input[type="number"], 
+input[type="text"], 
+select, 
+textarea {
+  -webkit-appearance: none;
+  font-size: 16px !important; /* 防止 iOS Safari 自動放大頁面 (16px 是門檻) */
+  outline: none;
+}
+
+/* 4. 手機版樣式微調 */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr; /* 手機版表單改為垂直排列 */
+  }
+
+  .expense-amount {
+    font-size: 1.4rem;
+  }
+
+  .expense-item-name {
+    font-size: 1.1rem;
+  }
+}

@@ -407,7 +407,7 @@ function renderPayersAndSplitters(users, expense = null) {
                     ${userTag}
                 </label>
                 <div class="input-group">
-                    <input type="number" step="any" class="payer-amount" value="${pData ? pData.amount : ''}" placeholder="金額" ${isChecked ? '' : 'disabled'}>
+                    <input type="number" step="any" inputmode="decimal" class="payer-amount" value="${pData ? pData.amount : ''}" placeholder="金額" ${isChecked ? '' : 'disabled'}>
                 </div>
             </div>
         `;
@@ -428,7 +428,7 @@ function renderPayersAndSplitters(users, expense = null) {
                 </label>
                 <div class="share-counter ${isChecked ? '' : 'hidden'}">
                     <span class="share-label">x</span>
-                    <input type="number" min="1" step="1" class="share-count-input" value="${count}">
+                    <input type="number" min="1" step="1" inputmode="numeric" class="share-count-input" value="${count}">
                 </div>
             </div>
         `;
