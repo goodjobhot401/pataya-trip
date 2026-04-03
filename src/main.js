@@ -144,6 +144,8 @@ async function handleUpdateExchangeRate(newRates) {
 // 註冊全域 UI 函式 (供 HTML onclick 調用)
 window.openExpenseModal = () => openExpenseModal(null, allUsers);
 window.closeExpenseModal = () => closeExpenseModal();
+window.handleEditExpense = (id) => handleEditExpense(id);
+window.handleDeleteExpense = (id) => handleDeleteExpense(id);
 
 // 處理支出表單提交
 document.getElementById('expense-form').addEventListener('submit', async (e) => {

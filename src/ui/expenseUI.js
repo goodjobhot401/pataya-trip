@@ -86,7 +86,7 @@ function renderRateManagementList() {
     if (!listContainer) return;
 
     const codes = Object.keys(currentRatesForMgmt).filter(c => c !== 'TWD');
-    
+
     if (codes.length === 0) {
         listContainer.innerHTML = '<div class="empty-state">尚未新增任何匯率資料</div>';
     } else {
@@ -199,7 +199,7 @@ export function renderSettlementSummary(expenses, users, rates, baseCurrency = '
 
     const renderCurrencyBlock = (curr, list) => {
         if (list.length === 0) return `<div class="settle-empty" style="padding: 40px;">目前結算已平衡！✨</div>`;
-        
+
         return list.map(s => `
             <div class="settle-row">
                 <span class="settle-name debtor">${s.from}</span>
@@ -249,14 +249,14 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates, 
 
     const renderActionList = (actions, title) => {
         if (actions.length === 0) return `<div class="empty-state" style="padding: 40px;">目前此結算區間已平衡！✨</div>`;
-        
+
         return `
             <div class="personal-actions-list unified-list full-width">
                 <h4 class="list-title">${title}</h4>
                 <div class="settle-items">
                     ${actions.map(s => {
-                        const isPayOut = s.from === userName;
-                        return `
+            const isPayOut = s.from === userName;
+            return `
                             <div class="settle-row ${isPayOut ? 'payout' : 'collect'}">
                                 <div class="settle-main">
                                     <span class="settle-status-text">
@@ -268,15 +268,15 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates, 
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+        }).join('')}
                 </div>
             </div>
         `;
     };
 
     container.innerHTML = `
-        <div class="personal-summary-grid single-row">
-            ${renderPill(summary.Unified, 'Unified', `💎 統一結算平衡 (${baseCurrency})`)}
+        <div class="personal-summary-grid single-row margin-top-20">
+            ${renderPill(summary.Unified, 'Unified', `💎 統一結算盈餘 (${baseCurrency})`)}
         </div>
         
         <div class="settlement-action-comparison single-view">
@@ -284,11 +284,6 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates, 
                 ${renderActionList(myUnifiedActions, `📋 建議轉帳明細 (${baseCurrency})`)}
             </div>
         </div>
-
-        <p class="settle-tip premium-tip">
-            💡 系統已依照最新匯率將所有支出合算。您只需依照上方明細進行一次性結清即可。<br>
-            若需更改結算顯示幣別，請點選右上方的選單。
-        </p>
     `;
 }
 
@@ -296,7 +291,7 @@ export function openExpenseModal(expense = null, users = []) {
     const modal = document.getElementById('expense-modal');
     const form = document.getElementById('expense-form');
     const title = document.getElementById('modal-title');
-    
+
     modal.classList.remove('hidden');
     form.reset();
 
@@ -321,7 +316,7 @@ export function closeExpenseModal() {
 
 export function getExpenseFormData() {
     const id = document.getElementById('expense-id').value;
-    const itemName = document.getElementById('item-name').value;
+    const item_name = document.getElementById('item-name').value;
     const amount = parseFloat(document.getElementById('amount').value);
     const currency = document.getElementById('currency').value;
     const remarks = document.getElementById('remarks').value;
@@ -340,10 +335,10 @@ export function getExpenseFormData() {
 
     const splitters = [];
     document.querySelectorAll('.splitter-checkbox:checked').forEach(cb => {
-        splitters.push({ user_id: cb.value });
+        splitters.push(cb.value); // 回傳 ID 字串陣列
     });
 
-    return { id, itemName, amount, currency, remarks, payers, splitters };
+    return { id, item_name, amount, currency, remarks, payers, splitters };
 }
 
 function renderPayersAndSplitters(users, expense = null) {
@@ -389,7 +384,7 @@ export function renderCurrencyDropdown(rates) {
     if (!select || !rates) return;
 
     const currencies = Object.keys(rates);
-    
+
     const nameMap = {
         'TWD': '🇹🇼 TWD 台幣',
         'THB': '🇹🇭 THB 泰銖',

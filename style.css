@@ -1668,3 +1668,36 @@ textarea:focus {
 .settle-amount.debt {
   color: #e53e3e;
 }
+
+/* --- 修復小圖示按鈕樣式與點擊熱區 --- */
+.btn-icon-only {
+  width: 38px;
+  height: 38px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-icon-only:hover {
+  background: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.2);
+  transform: scale(1.08);
+}
+
+.btn-icon-only.btn-danger:hover {
+  border-color: #f56565;
+  box-shadow: 0 4px 12px rgba(245, 101, 101, 0.2);
+}
+
+.margin-top-20 {
+  margin-top: 20px;
+}
