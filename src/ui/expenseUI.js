@@ -22,7 +22,7 @@ export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
         const payersText = exp.expense_payers
             .map(p => `${p.users.name} (${formatCurrency(p.amount, exp.currency)})`)
             .join(', ');
-        
+
         const splittersText = exp.expense_splitters
             .map(s => s.users.name)
             .join(', ');
@@ -72,78 +72,132 @@ export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
 }
 
 export function renderExchangeRateSettings(rates, onUpdateRate) {
-    const container = document.getElementById('exchange-rate-container');
-    if (!container) return;
+    const containers = document.querySelectorAll('.header-rate-info');
+    if (containers.length === 0 || !rates) return;
 
-    const rateTHB = rates?.THB || 0.95;
+    // 生成簡易摘要：1 TWD = THB XX, USD XX...
+    const rateSummaries = Object.keys(rates)
+        .filter(curr => curr !== 'TWD')
+        .map(curr => `${curr} ${rates[curr]}`)
+        .join(', ');
 
-    container.innerHTML = `
-        <div class="global-rate-banner">
-            <div class="rate-banner-content">
-                <div class="rate-status-info">
-                    <span class="rate-badge">SYSTEM CONFIG</span>
-                    <div class="main-rate-text">
-                        <span class="currency-pair">1 TWD = <strong>${rateTHB}</strong> THB</span>
-                        <span class="rate-sync-dot"></span>
-                        <small class="rate-desc">已同步全域結算匯率</small>
-                    </div>
-                </div>
-                <div class="rate-banner-actions">
-                    <button id="btn-edit-rate" class="btn-rate-edit">
-                        <span class="icon">⚙️</span> 編輯參數
-                    </button>
-                </div>
-            </div>
-
-            <div id="rate-edit-form" class="rate-edit-popover hidden">
-                <div class="form-title">⚡ 調整換算參值</div>
-                <div class="input-row">
-                    <span class="input-prefix">1 TWD = </span>
-                    <input type="number" id="new-thb-rate" step="0.001" value="${rateTHB}">
-                    <span class="input-suffix"> THB</span>
-                </div>
-                <div class="popover-actions">
-                    <button id="btn-save-rate" class="btn-save-lite">更新並重算</button>
-                    <button id="btn-cancel-rate" class="btn-ghost-lite">取消</button>
-                </div>
-            </div>
+    const rateHtml = `
+        <div class="inline-rate-display">
+            <span class="rate-text">💱 1 TWD = <strong>${rateSummaries || '尚未設定'}</strong></span>
+            <button class="btn-text-edit" id="btn-open-rate-mgmt">⚙️ 管理</button>
         </div>
     `;
 
-    const editBtn = document.getElementById('btn-edit-rate');
-    const saveBtn = document.getElementById('btn-save-rate');
-    const cancelBtn = document.getElementById('btn-cancel-rate');
-    const editForm = document.getElementById('rate-edit-form');
-
-    editBtn.addEventListener('click', () => {
-        editForm.classList.toggle('hidden');
-    });
-
-    cancelBtn.addEventListener('click', () => {
-        editForm.classList.add('hidden');
-    });
-
-    saveBtn.addEventListener('click', async () => {
-        const newRateVal = parseFloat(document.getElementById('new-thb-rate').value);
-        if (isNaN(newRateVal) || newRateVal <= 0) {
-            alert('請輸入有效匯率');
-            return;
-        }
-        await onUpdateRate({ TWD: 1, THB: newRateVal });
-        editForm.classList.add('hidden');
+    containers.forEach(container => {
+        container.innerHTML = rateHtml;
+        const btn = container.querySelector('#btn-open-rate-mgmt');
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.openRateModal(rates, onUpdateRate);
+        });
     });
 }
 
-export function renderSettlementSummary(expenses, users, rates) {
+// 匯率管理 Modal 邏輯
+let currentRatesForMgmt = null;
+let currentUpdateCallback = null;
+
+window.openRateModal = (rates, onUpdate) => {
+    const modal = document.getElementById('rate-modal');
+    modal.classList.remove('hidden');
+    currentRatesForMgmt = { ...rates }; // 複製一份
+    currentUpdateCallback = onUpdate;
+    renderRateManagementList();
+};
+
+window.closeRateModal = () => {
+    document.getElementById('rate-modal').classList.add('hidden');
+};
+
+function renderRateManagementList() {
+    const listContainer = document.getElementById('rate-management-list');
+    if (!listContainer) return;
+
+    // 列出除了 TWD 以外的所有幣別
+    const codes = Object.keys(currentRatesForMgmt).filter(c => c !== 'TWD');
+
+    if (codes.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">尚未新增任何匯率資料</div>';
+    } else {
+        listContainer.innerHTML = codes.map(code => `
+            <div class="rate-mgmt-row">
+                <span class="code-label">1 TWD = </span>
+                <input type="number" step="0.001" value="${currentRatesForMgmt[code]}" 
+                    onchange="window.updateLocalRate('${code}', this.value)">
+                <span class="code-suffix">${code}</span>
+                <button class="btn-remove-rate" onclick="window.removeCurrency('${code}')">🗑️</button>
+            </div>
+        `).join('');
+    }
+}
+
+// 註冊全域方法以供 Modal 調用
+window.updateLocalRate = (code, val) => {
+    currentRatesForMgmt[code] = parseFloat(val);
+    currentUpdateCallback(currentRatesForMgmt);
+};
+
+window.addNewCurrency = async () => {
+    const codeInp = document.getElementById('new-curr-code');
+    const rateInp = document.getElementById('new-curr-rate');
+    const code = codeInp.value.trim().toUpperCase();
+    const rate = parseFloat(rateInp.value);
+
+    if (!code || isNaN(rate) || rate <= 0) {
+        alert('請輸入正確的幣別代碼與匯率');
+        return;
+    }
+
+    currentRatesForMgmt[code] = rate;
+    await currentUpdateCallback(currentRatesForMgmt);
+
+    // 清空並重新渲染
+    codeInp.value = '';
+    rateInp.value = '';
+    renderRateManagementList();
+};
+
+window.removeCurrency = async (code) => {
+    if (confirm(`確定要移除 ${code} 嗎？此動作將導致相關支出無法換算。`)) {
+        delete currentRatesForMgmt[code];
+        await currentUpdateCallback(currentRatesForMgmt);
+        renderRateManagementList();
+    }
+};
+
+export function renderBaseCurrencySelectors(rates, activeBase) {
+    const selectors = document.querySelectorAll('.base-currency-select');
+    if (!selectors.length || !rates) return;
+
+    const currencies = Object.keys(rates);
+    const options = currencies.map(curr => `
+        <option value="${curr}" ${curr === activeBase ? 'selected' : ''}>以 ${curr} 結算</option>
+    `).join('');
+
+    selectors.forEach(s => {
+        s.innerHTML = `
+            <optgroup label="🌐 變更結算基準">
+                ${options}
+            </optgroup>
+        `;
+    });
+}
+
+export function renderSettlementSummary(expenses, users, rates, baseCurrency = 'TWD') {
     const summaryContainer = document.getElementById('expense-summary');
     if (!summaryContainer) return;
 
     const settlements = calculateSettlements(expenses, users);
-    const unifiedSettlements = rates ? calculateUnifiedSettlement(expenses, users, rates, 'TWD') : [];
+    const unifiedSettlements = rates ? calculateUnifiedSettlement(expenses, users, rates, baseCurrency) : [];
 
     const renderCurrencyBlock = (curr, list) => {
-        if (list.length === 0) return `<div class="settle-empty">暫無${curr}債務</div>`;
-        
+        if (list.length === 0) return `<div class="settle-empty">暫無 ${curr} 欠款</div>`;
+
         return list.map(s => `
             <div class="settle-row">
                 <span class="settle-name debtor">${s.from}</span>
@@ -154,43 +208,45 @@ export function renderSettlementSummary(expenses, users, rates) {
         `).join('');
     };
 
+    // 生成所有原始幣別的區塊
+    const originalCurrencies = Object.keys(settlements);
+    const originalBlocks = originalCurrencies.map(curr => `
+        <div class="settlement-column">
+            <h4>${curr} 原始明細</h4>
+            ${renderCurrencyBlock(curr, settlements[curr])}
+        </div>
+    `).join('');
+
     summaryContainer.innerHTML = `
         <div class="settlement-blocks">
             <div class="settlement-column unified-column">
                 <div class="column-header">
-                    <h4>💎 統一幣別結標 (TWD)</h4>
+                    <h4>💎 統一幣別結標 (${baseCurrency})</h4>
                     <span class="badge-premium">RECOMMENDED</span>
                 </div>
-                ${renderCurrencyBlock('TWD', unifiedSettlements)}
-                ${rates ? `<p class="settle-note">※ 已依匯率 1 TWD = ${rates.THB} THB 進行轉換</p>` : ''}
+                ${renderCurrencyBlock(baseCurrency, unifiedSettlements)}
+                ${rates ? `<p class="settle-note">※ 已依當前匯率轉換為 ${baseCurrency}</p>` : ''}
             </div>
             <div class="settlement-column-group">
-                <div class="settlement-column">
-                    <h4>🇹🇼 台幣原始明細 (TWD)</h4>
-                    ${renderCurrencyBlock('TWD', settlements['TWD'])}
-                </div>
-                <div class="settlement-column">
-                    <h4>🇹🇭 泰銖原始明細 (THB)</h4>
-                    ${renderCurrencyBlock('THB', settlements['THB'])}
-                </div>
+                ${originalBlocks}
             </div>
         </div>
     `;
 }
 
-export function renderPersonalSettlement(expenses, users, currentUserId, rates) {
+export function renderPersonalSettlement(expenses, users, currentUserId, rates, baseCurrency = 'TWD') {
     const container = document.getElementById('personal-settlement');
     if (!container) return;
 
     const currentUser = users.find(u => u.id === currentUserId);
     const userName = currentUser ? currentUser.name : '';
-    const summary = getPersonalSummaries(expenses, currentUserId, rates, 'TWD');
+    const summary = getPersonalSummaries(expenses, currentUserId, rates, baseCurrency);
     const settlements = calculateSettlements(expenses, users);
-    const unifiedSettlements = rates ? calculateUnifiedSettlement(expenses, users, rates, 'TWD') : [];
+    const unifiedSettlements = rates ? calculateUnifiedSettlement(expenses, users, rates, baseCurrency) : [];
 
     // 篩選與當前使用者相關的轉帳路徑 (原始)
     const mySettleActions = [];
-    ['TWD', 'THB'].forEach(currency => {
+    Object.keys(settlements).forEach(currency => {
         const curSettles = settlements[currency] || [];
         curSettles.forEach(s => {
             if (s.from === userName || s.to === userName) {
@@ -205,26 +261,26 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates) 
     const renderPill = (amount, curr, labelPfx = '') => {
         const classes = amount >= 0 ? 'status-check' : 'status-waiting';
         const prefix = amount >= 0 ? '應收回' : '應支付';
+        const displayCurr = curr === 'Unified' ? baseCurrency : curr;
         return `
             <div class="personal-pill ${classes} ${curr === 'Unified' ? 'premium' : ''}">
                 <span class="pill-label">${labelPfx || curr} 平衡：</span>
-                <span class="pill-value">${prefix} ${formatCurrency(Math.abs(amount), curr === 'Unified' ? 'TWD' : curr)}</span>
+                <span class="pill-value">${prefix} ${formatCurrency(Math.abs(amount), displayCurr)}</span>
             </div>
         `;
     };
 
-    let actionsHtml = '';
     const renderActionList = (actions, title, isUnified = false) => {
         if (actions.length === 0) return `<div class="empty-state" style="opacity: 0.5;">目前${title}已平衡！✨</div>`;
-        
+
         return `
             <div class="personal-actions-list ${isUnified ? 'unified-list' : ''}">
                 <h4 class="list-title">${title}</h4>
                 <div class="settle-items">
                     ${actions.map(s => {
-                        const isPayOut = s.from === userName;
-                        const curr = s.currency || 'TWD';
-                        return `
+            const isPayOut = s.from === userName;
+            const curr = s.currency || baseCurrency;
+            return `
                             <div class="settle-row ${isPayOut ? 'payout' : 'collect'}">
                                 <div class="settle-main">
                                     <span class="settle-status-text">
@@ -236,22 +292,27 @@ export function renderPersonalSettlement(expenses, users, currentUserId, rates) 
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+        }).join('')}
                 </div>
             </div>
         `;
     };
 
+    // 生成所有原始幣別的 Pill
+    const originalPills = Object.keys(summary)
+        .filter(k => k !== 'Unified')
+        .map(k => renderPill(summary[k], k))
+        .join('');
+
     container.innerHTML = `
         <div class="personal-summary-grid">
-            ${renderPill(summary.Unified, 'Unified', '💎 統一 TWD')}
-            ${renderPill(summary.TWD, 'TWD')}
-            ${renderPill(summary.THB, 'THB')}
+            ${renderPill(summary.Unified, 'Unified', `💎 統一 ${baseCurrency}`)}
+            ${originalPills}
         </div>
         
         <div class="settlement-action-comparison">
             <div class="comparison-column">
-                ${renderActionList(myUnifiedActions, '📋 建議統一結算 (TWD)', true)}
+                ${renderActionList(myUnifiedActions, `📋 建議統一結算 (${baseCurrency})`, true)}
             </div>
             <div class="comparison-column">
                 ${renderActionList(mySettleActions, '⌛ 原始幣別明細')}
@@ -272,7 +333,7 @@ export function renderCurrencyDropdown(rates) {
     // 獲取所有具備匯率的幣別
     // 例如 { TWD: 1, THB: 0.95 }
     const currencies = Object.keys(rates);
-    
+
     // 定義顯示名稱對應表
     const nameMap = {
         'TWD': '🇹🇼 TWD 台幣',

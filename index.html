@@ -95,11 +95,6 @@
       <!-- 代付支出分頁 -->
       <div id="expense-content" class="hidden">
         
-        <!-- 全域匯率設定 (在支出頁面最上方) -->
-        <div id="exchange-rate-container" class="global-rate-banner">
-          <!-- JS 動態生成匯率橫幅 -->
-        </div>
-
         <!-- 頂部操作區 -->
         <div class="expense-header-action">
           <button class="btn btn-primary btn-lg" onclick="window.openExpenseModal()">
@@ -119,8 +114,9 @@
 
         <!-- 1. 支出明細列表 (預設顯示) -->
         <section id="expense-list-section" class="sub-content">
-          <div class="section-header">
+          <div class="section-header header-flex">
             <h2 class="section-title">🗓️ 支出明細 <small>點擊按鈕可進行編輯或刪除</small></h2>
+            <div class="header-rate-info"></div>
           </div>
           <div id="expense-list" class="expense-list-container">
             <div class="loading-placeholder">無資料</div>
@@ -129,8 +125,14 @@
 
         <!-- 2. 結算總覽 -->
         <section id="expense-summary-section" class="sub-content hidden">
-          <div class="section-header">
+          <div class="section-header header-flex">
             <h2 class="section-title">⚖️ 結算總覽</h2>
+            <div class="header-action-group">
+                <select id="settlement-base-currency" class="base-currency-select" onchange="window.handleBaseCurrencyChange(this.value)">
+                    <!-- 由 JS 動態填充幣別 -->
+                </select>
+                <div class="header-rate-info"></div>
+            </div>
           </div>
           <div id="expense-summary" class="card settlement-card">
             <div class="loading-placeholder">無資料</div>
@@ -139,8 +141,14 @@
 
         <!-- 3. 個人結帳 -->
         <section id="personal-settlement-section" class="sub-content hidden">
-          <div class="section-header">
+          <div class="section-header header-flex">
             <h2 class="section-title">👤 個人帳務 <small>我在這趟旅行中的資產淨值</small></h2>
+            <div class="header-action-group">
+                <select id="personal-base-currency" class="base-currency-select" onchange="window.handleBaseCurrencyChange(this.value)">
+                    <!-- 由 JS 動態填充幣別 -->
+                </select>
+                <div class="header-rate-info"></div>
+            </div>
           </div>
           <div id="personal-settlement" class="card settlement-card">
             <div class="loading-placeholder">無資料</div>
@@ -206,7 +214,28 @@
     </div>
   </div>
 
-  <!-- Supabase CDN -->
+    <!-- 匯率管理彈出視窗 -->
+    <div id="rate-modal" class="modal hidden">
+      <div class="modal-content card" style="max-width: 400px;">
+        <h2>⚙️ 幣別匯率管理</h2>
+        <div id="rate-management-list" class="rate-mgmt-list">
+          <!-- JS 動態生成幣別列表 -->
+        </div>
+        <div class="rate-add-section">
+          <h4>➕ 新增幣別</h4>
+          <div class="form-row">
+            <input type="text" id="new-curr-code" placeholder="代碼 (如 USD)" maxlength="3" style="text-transform: uppercase;">
+            <input type="number" id="new-curr-rate" placeholder="對 TWD 匯率" step="0.001">
+          </div>
+          <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="window.addNewCurrency()">新增幣別並存檔</button>
+        </div>
+        <div class="modal-actions" style="margin-top: 30px;">
+          <button type="button" class="btn btn-secondary" onclick="window.closeRateModal()">關閉</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="./src/main.js"></script>
 </body>

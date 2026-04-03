@@ -45,21 +45,23 @@ function solveDebts(balances, users) {
  * 計算所有支出的債務結清 (依據幣別分開)
  */
 export function calculateSettlements(expenses, users) {
-    const currencies = ['TWD', 'THB'];
-    const finalSettlements = { TWD: [], THB: [] };
+    const currencies = [...new Set(expenses.map(e => e.currency))];
+    const finalSettlements = {};
 
     currencies.forEach(curr => {
         const balances = {};
         users.forEach(u => balances[u.id] = 0);
 
         expenses.filter(e => e.currency === curr).forEach(exp => {
-            exp.expense_payers.forEach(p => {
+            const payers = exp.expense_payers || [];
+            const splitters = exp.expense_splitters || [];
+            
+            payers.forEach(p => {
                 balances[p.user_id] += parseFloat(p.amount);
             });
 
-            const splitters = exp.expense_splitters;
             if (splitters.length > 0) {
-                const totalAmount = exp.expense_payers.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+                const totalAmount = payers.reduce((sum, p) => sum + parseFloat(p.amount), 0);
                 const shareAmount = totalAmount / splitters.length;
                 splitters.forEach(s => {
                     balances[s.user_id] -= shareAmount;

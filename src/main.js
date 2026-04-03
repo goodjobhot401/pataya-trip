@@ -14,7 +14,8 @@ import {
     closeExpenseModal, 
     getExpenseFormData,
     renderExchangeRateSettings,
-    renderCurrencyDropdown
+    renderCurrencyDropdown,
+    renderBaseCurrencySelectors
 } from './ui/expenseUI';
 
 // 全域狀態
@@ -24,6 +25,9 @@ let allAccommodations = [];
 let allUsers = [];
 let allExpenses = [];
 let tripSettings = {};
+let currentBaseCurrency = 'TWD'; // 當前結算基準幣別
+
+// ... (setupApp and refreshData omitted for brevity if they don't change much, but I'll update renderExpensesTab)
 
 // 1. 初始化
 document.addEventListener('DOMContentLoaded', async () => {
@@ -115,9 +119,19 @@ function renderExpensesTab() {
     renderExpenseList(allExpenses, currentUser.id, handleEditExpense, handleDeleteExpense);
     renderExchangeRateSettings(rates, handleUpdateExchangeRate);
     renderCurrencyDropdown(rates); // 同步下拉選單幣別
-    renderSettlementSummary(allExpenses, allUsers, rates);
-    renderPersonalSettlement(allExpenses, allUsers, currentUser.id, rates);
+    
+    // 同步所有的結算基準下拉選單 (結算總覽 與 我的帳務)
+    renderBaseCurrencySelectors(rates, currentBaseCurrency);
+
+    renderSettlementSummary(allExpenses, allUsers, rates, currentBaseCurrency);
+    renderPersonalSettlement(allExpenses, allUsers, currentUser.id, rates, currentBaseCurrency);
 }
+
+// 供 UI 切換結算基準
+window.handleBaseCurrencyChange = (newBase) => {
+    currentBaseCurrency = newBase;
+    renderExpensesTab();
+};
 
 async function handleUpdateExchangeRate(newRates) {
     try {
