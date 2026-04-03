@@ -59,9 +59,6 @@ async function setupApp() {
     // 預先載入所有使用者 (表單與結算需使用)
     allUsers = await getAllUsers();
     
-    // 初始化支出 Modal (生成使用者勾選清單)
-    initExpenseModal(allUsers);
-
     await refreshData();
 }
 
@@ -145,7 +142,7 @@ async function handleUpdateExchangeRate(newRates) {
 }
 
 // 註冊全域 UI 函式 (供 HTML onclick 調用)
-window.openExpenseModal = () => openExpenseModal();
+window.openExpenseModal = () => openExpenseModal(null, allUsers);
 window.closeExpenseModal = () => closeExpenseModal();
 
 // 處理支出表單提交
@@ -174,7 +171,7 @@ document.getElementById('expense-form').addEventListener('submit', async (e) => 
 
 async function handleEditExpense(id) {
     const expense = allExpenses.find(e => e.id === id);
-    if (expense) openExpenseModal(expense);
+    if (expense) openExpenseModal(expense, allUsers);
 }
 
 async function handleDeleteExpense(id) {
