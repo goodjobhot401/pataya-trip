@@ -1701,3 +1701,46 @@ textarea:focus {
 .margin-top-20 {
   margin-top: 20px;
 }
+
+/* --- Modal 內部選單標色與份數樣式 --- */
+.payer-row, .splitter-item-row {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.payer-row:last-child, .splitter-item-row:last-child {
+  border-bottom: none;
+}
+
+.share-counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.share-label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.share-count-input {
+  width: 50px !important;
+  padding: 4px 8px !important;
+  font-size: 0.9rem !important;
+  border-radius: 6px !important;
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 讓 Modal 內的名字標籤稍微縮小一點 */
+.modal-content .user-tag {
+  font-size: 0.85rem;
+  padding: 1px 6px;
+}

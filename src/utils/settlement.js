@@ -54,17 +54,19 @@ export function calculateSettlements(expenses, users) {
 
         expenses.filter(e => e.currency === curr).forEach(exp => {
             const payers = exp.expense_payers || [];
-            const splitters = exp.expense_splitters || [];
+            const splitterRecords = exp.expense_splitters || [];
             
             payers.forEach(p => {
                 balances[p.user_id] += parseFloat(p.amount);
             });
 
-            if (splitters.length > 0) {
+            if (splitterRecords.length > 0) {
                 const totalAmount = payers.reduce((sum, p) => sum + parseFloat(p.amount), 0);
-                const shareAmount = totalAmount / splitters.length;
-                splitters.forEach(s => {
-                    balances[s.user_id] -= shareAmount;
+                const totalShares = splitterRecords.reduce((sum, s) => sum + (s.share_count || 1), 0);
+                const perShareAmount = totalAmount / totalShares;
+                
+                splitterRecords.forEach(s => {
+                    balances[s.user_id] -= perShareAmount * (s.share_count || 1);
                 });
             }
         });
@@ -99,13 +101,14 @@ export function calculateUnifiedSettlement(expenses, users, rates, baseCurrency 
             balances[p.user_id] += convertToBase(parseFloat(p.amount), exp.currency);
         });
 
-        const splitters = exp.expense_splitters;
+        const splitters = exp.expense_splitters || [];
         if (splitters.length > 0) {
-            const totalAmount = exp.expense_payers.reduce((sum, p) => sum + parseFloat(p.amount), 0);
-            const totalInBase = convertToBase(totalAmount, exp.currency);
-            const shareInBase = totalInBase / splitters.length;
+            const totalShares = splitters.reduce((sum, s) => sum + (s.share_count || 1), 0);
+            const totalInBase = convertToBase(exp.amount, exp.currency);
+            const perShareInBase = totalInBase / totalShares;
+            
             splitters.forEach(s => {
-                balances[s.user_id] -= shareInBase;
+                balances[s.user_id] -= perShareInBase * (s.share_count || 1);
             });
         }
     });
@@ -120,13 +123,7 @@ export function calculateUnifiedSettlement(expenses, users, rates, baseCurrency 
 export function getPersonalSummaries(expenses, userId, rates = null, baseCurrency = 'TWD') {
     const summarized = { TWD: 0, THB: 0, Unified: 0 };
     
-    const convertToBase = (amt, curr) => {
-        if (!rates || curr === baseCurrency) return amt;
-        const currentRate = rates[curr];
-        const baseRate = rates[baseCurrency] || 1;
-        if (!currentRate) return amt;
-        return amt / currentRate * baseRate;
-    };
+    // ... (convertToBase 保持不變)
 
     expenses.forEach(exp => {
         const myPaid = exp.expense_payers.find(p => p.user_id === userId);
@@ -141,14 +138,17 @@ export function getPersonalSummaries(expenses, userId, rates = null, baseCurrenc
         }
 
         if (mySplit) {
-            const totalAmount = exp.expense_payers.reduce((sum, p) => sum + parseFloat(p.amount), 0);
-            subShare = totalAmount / exp.expense_splitters.length;
+            const totalShares = exp.expense_splitters.reduce((sum, s) => sum + (s.share_count || 1), 0);
+            const perShareAmount = exp.amount / totalShares;
+            // 重要：個人的欠款 = 每份單價 * 自己的份數
+            subShare = perShareAmount * (mySplit.share_count || 1);
             summarized[exp.currency] -= subShare;
         }
 
         // 統一幣別計算
         if (rates) {
-            summarized.Unified += convertToBase(subPaid - subShare, exp.currency);
+            const netAmount = subPaid - subShare;
+            summarized.Unified += convertToBase(netAmount, exp.currency);
         }
     });
 

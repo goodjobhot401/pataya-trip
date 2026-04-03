@@ -1,27 +1,26 @@
 import { calculateSettlements, calculateUnifiedSettlement, getPersonalSummaries } from '../utils/settlement';
 
 /**
- * 根據使用者名稱動態生成唯一且穩定的顏色 (無限擴充且防撞色)
+ * 根據使用者名稱動態生成唯一且穩定的顏色 (金角度優化：最大化顏色區分度)
  */
-function getUserStyle(name) {
-    // 1. 基於名稱計算穩定 Hash
+function getUserStyle(name, index = 0) {
+    // 1. 基於名稱計算穩定 Hash 作為基礎種子
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    // 2. 取得分布均勻的色相 (0-360)
-    const h = Math.abs(hash) % 360;
+    // 2. 使用金角度 (Golden Angle ~137.5) 來分佈色相，確保連續的人顏色差距最大
+    // 我們將名字 hash 與一個序號結合，確保分佈更廣
+    const goldenAngle = 137.508;
+    const h = (Math.abs(hash) + (index * goldenAngle)) % 360;
     
     // 3. 設定高品質的 HSL 參數
-    // 背景：高亮度、柔和飽和度 (粉彩色)
-    const bg = `hsl(${h}, 70%, 94%)`;
-    // 文字：低亮度 (深色)、高飽和度
-    const text = `hsl(${h}, 80%, 25%)`;
-    // 邊框：稍微深一點點的背景色
-    const border = `hsl(${h}, 60%, 88%)`;
+    const bg = `hsl(${h}, 75%, 95%)`;
+    const text = `hsl(${h}, 85%, 25%)`;
+    const border = `hsl(${h}, 70%, 85%)`;
     
-    return `background: ${bg}; color: ${text}; border: 1px solid ${border}; padding: 2px 8px; border-radius: 6px; font-weight: 700; margin: 0 2px; white-space: nowrap;`;
+    return `background: ${bg}; color: ${text}; border: 1px solid ${border}; padding: 2px 8px; border-radius: 6px; font-weight: 700; margin: 0 2px; white-space: nowrap; font-size: 0.9em;`;
 }
 
 function formatUserSpan(name) {
@@ -42,7 +41,11 @@ export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
             .join(', ');
 
         const splittersText = exp.expense_splitters
-            .map(s => formatUserSpan(s.users.name))
+            .map(s => {
+                const tag = formatUserSpan(s.users.name);
+                const count = s.share_count || 1;
+                return count > 1 ? `${tag}<small style="color:#94a3b8; font-weight:800; margin-left:2px;">x${count}</small>` : tag;
+            })
             .join(', ');
 
         return `
@@ -362,8 +365,15 @@ export function getExpenseFormData() {
     });
 
     const splitters = [];
-    document.querySelectorAll('.splitter-checkbox:checked').forEach(cb => {
-        splitters.push(cb.value); // 回傳 ID 字串陣列
+    document.querySelectorAll('.splitter-item').forEach(item => {
+        const checkbox = item.querySelector('.splitter-checkbox');
+        const countInput = item.querySelector('.share-count-input');
+        if (checkbox.checked) {
+            splitters.push({
+                user_id: checkbox.value,
+                share_count: parseInt(countInput.value) || 1
+            });
+        }
     });
 
     return { id, item_name, amount, currency, remarks, payers, splitters };
@@ -373,29 +383,47 @@ function renderPayersAndSplitters(users, expense = null) {
     const payersContainer = document.getElementById('payers-container');
     const splittersContainer = document.getElementById('splitters-container');
 
-    payersContainer.innerHTML = users.map(user => {
+    // 1. 渲染支付者 (帶標色)
+    payersContainer.innerHTML = users.map((user, idx) => {
         const pData = expense?.expense_payers.find(p => p.user_id === user.id);
+        const userTag = formatUserSpan(user.name);
         return `
             <div class="payer-row">
                 <label class="checkbox-label">
                     <input type="checkbox" class="payer-checkbox" value="${user.id}" ${pData ? 'checked' : ''}>
-                    ${user.name}
+                    ${userTag}
                 </label>
-                <input type="number" class="payer-amount" placeholder="金額" step="0.01" value="${pData ? pData.amount : ''}" ${pData ? '' : 'disabled'}>
+                <div class="input-group">
+                    <input type="number" step="any" class="payer-amount" value="${pData ? pData.amount : ''}" placeholder="金額" ${pData ? '' : 'disabled'}>
+                </div>
             </div>
         `;
     }).join('');
 
-    splittersContainer.innerHTML = users.map(user => {
-        const isSplitter = expense ? expense.expense_splitters.some(s => s.user_id === user.id) : true;
+    // 2. 渲染分帳者 (新增份數選擇 + 標色)
+    splittersContainer.innerHTML = users.map((user, idx) => {
+        const sData = expense?.expense_splitters.find(s => s.user_id === user.id);
+        const userTag = formatUserSpan(user.name);
+        const count = sData ? (sData.share_count || 1) : 1;
+        const isChecked = sData || (!expense); // 新增時預設全選
+
         return `
-            <label class="checkbox-label">
-                <input type="checkbox" class="splitter-checkbox" value="${user.id}" ${isSplitter ? 'checked' : ''}>
-                ${user.name}
-            </label>
+            <div class="splitter-item-row">
+                <label class="checkbox-label">
+                    <input type="checkbox" class="splitter-checkbox" value="${user.id}" ${isChecked ? 'checked' : ''}>
+                    ${userTag}
+                </label>
+                <div class="share-counter ${isChecked ? '' : 'hidden'}">
+                    <span class="share-label">x</span>
+                    <input type="number" min="1" step="1" class="share-count-input" value="${count}" title="分幾份？(如攜伴)">
+                </div>
+            </div>
         `;
     }).join('');
 
+    // --- 事件監聽節點 ---
+    
+    // 支付者勾選切換
     document.querySelectorAll('.payer-checkbox').forEach(cb => {
         cb.addEventListener('change', (e) => {
             const input = e.target.closest('.payer-row').querySelector('.payer-amount');
@@ -403,6 +431,15 @@ function renderPayersAndSplitters(users, expense = null) {
             if (e.target.checked && !input.value) {
                 input.value = document.getElementById('amount').value || '';
             }
+        });
+    });
+
+    // 分帳者勾選顯示/隱藏份數輸入
+    document.querySelectorAll('.splitter-checkbox').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+            const counter = e.target.closest('.splitter-item-row').querySelector('.share-counter');
+            if (e.target.checked) counter.classList.remove('hidden');
+            else counter.classList.add('hidden');
         });
     });
 }

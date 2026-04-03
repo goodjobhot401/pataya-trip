@@ -59,10 +59,11 @@ export async function createExpense(expenseData, payers, splitters) {
         if (pError) throw pError;
     }
 
-    // 3. 建立分帳者明細
-    const splitterRecords = splitters.map(userId => ({
+    // 3. 建立分帳者明細 (包含份數)
+    const splitterRecords = splitters.map(s => ({
         expense_id: expenseId,
-        user_id: userId
+        user_id: s.user_id,
+        share_count: s.share_count || 1
     }));
 
     if (splitterRecords.length > 0) {
@@ -104,9 +105,10 @@ export async function updateExpense(expenseId, expenseData, payers, splitters) {
         if (pError) throw pError;
     }
 
-    const splitterRecords = splitters.map(userId => ({
+    const splitterRecords = splitters.map(s => ({
         expense_id: expenseId,
-        user_id: userId
+        user_id: s.user_id,
+        share_count: s.share_count || 1
     }));
 
     if (splitterRecords.length > 0) {
