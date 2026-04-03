@@ -29,8 +29,16 @@ function formatUserSpan(name) {
 
 export function renderExpenseList(expenses, currentUserId, onEdit, onDelete) {
     const listContainer = document.getElementById('expense-list');
-    if (!listContainer || expenses.length === 0) {
-        listContainer.innerHTML = '<div class="loading-placeholder">無資料</div>';
+    if (!listContainer) return;
+
+    if (expenses.length === 0) {
+        listContainer.innerHTML = `
+            <div class="empty-state-card">
+                <div class="empty-icon">📝</div>
+                <p class="empty-text">目前尚未建立任何支出明細</p>
+                <p class="empty-subtext">點擊上方「新增一筆支出」按鈕開始登記吧！</p>
+            </div>
+        `;
         return;
     }
 

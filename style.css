@@ -1744,3 +1744,34 @@ textarea:focus {
   font-size: 0.85rem;
   padding: 1px 6px;
 }
+
+/* --- 支出明細 空狀態樣式 --- */
+.empty-state-card {
+  background: #fffcf0; /* 與結算平衡時類似的高質感淺偏黃底色 */
+  border: 1px dashed #e2e8f0;
+  border-radius: 25px;
+  padding: 60px 30px;
+  text-align: center;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.02);
+  margin: 30px 0;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+}
+
+.empty-text {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.empty-subtext {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
