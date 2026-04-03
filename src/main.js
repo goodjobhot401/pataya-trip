@@ -5,13 +5,12 @@ import { fetchExpenses, createExpense, updateExpense, deleteExpense } from './se
 import { fetchTripSettings, updateExchangeRates } from './services/settings';
 import { renderAccommodations, updateVoteDots } from './ui/votingUI';
 import { renderStats, renderUserProgress } from './ui/statsUI';
-import { 
-    renderExpenseList, 
-    renderSettlementSummary, 
-    renderPersonalSettlement, 
-    initExpenseModal, 
-    openExpenseModal, 
-    closeExpenseModal, 
+import {
+    renderExpenseList,
+    renderSettlementSummary,
+    renderPersonalSettlement,
+    openExpenseModal,
+    closeExpenseModal,
     getExpenseFormData,
     renderExchangeRateSettings,
     renderCurrencyDropdown,
@@ -58,7 +57,7 @@ async function setupApp() {
 
     // 預先載入所有使用者 (表單與結算需使用)
     allUsers = await getAllUsers();
-    
+
     await refreshData();
 }
 
@@ -113,14 +112,14 @@ function renderStatsTab(allVotes) {
 // --- 支出邏輯 ---
 function renderExpensesTab() {
     const rates = tripSettings.exchange_rates;
-    
+
     // 預先進行資料驗證防呆
     renderValidationWarning(allExpenses, rates);
     renderBaseCurrencySelectors(rates, currentBaseCurrency, allExpenses);
 
     renderExpenseList(allExpenses, currentUser.id, handleEditExpense, handleDeleteExpense);
     renderExchangeRateSettings(rates, handleUpdateExchangeRate);
-    renderCurrencyDropdown(rates); 
+    renderCurrencyDropdown(rates);
 
     renderSettlementSummary(allExpenses, allUsers, rates, currentBaseCurrency);
     renderPersonalSettlement(allExpenses, allUsers, currentUser.id, rates, currentBaseCurrency);
@@ -151,7 +150,7 @@ window.handleDeleteExpense = (id) => handleDeleteExpense(id);
 document.getElementById('expense-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = getExpenseFormData();
-    
+
     // 檢查總金額是否與分款金額相符 (簡單驗證)
     const totalPaid = data.payers.reduce((sum, p) => sum + p.amount, 0);
     if (Math.abs(totalPaid - data.amount) > 0.1) {
@@ -189,12 +188,12 @@ async function handleDeleteExpense(id) {
 
 // --- 通用 UI 邏輯 ---
 function setupTabs() {
-    window.switchTab = function(target, event) {
+    window.switchTab = function (target, event) {
         if (event) event.preventDefault();
-        
+
         const tabs = document.querySelectorAll('.nav-tab');
         const tabElement = event ? event.currentTarget : document.querySelector(`[data-tab="${target}"]`);
-        
+
         tabs.forEach(t => t.classList.remove('active'));
         if (tabElement) tabElement.classList.add('active');
 
@@ -202,7 +201,7 @@ function setupTabs() {
             const el = document.getElementById(id);
             if (el) el.classList.add('hidden');
         });
-        
+
         const targetEl = document.getElementById(target);
         if (targetEl) targetEl.classList.remove('hidden');
 
@@ -218,7 +217,7 @@ function setupTabs() {
     };
 
     // --- 新增：子分頁切換邏輯 (支出分頁專用) ---
-    window.switchSubTab = function(targetSectionId, event) {
+    window.switchSubTab = function (targetSectionId, event) {
         if (event) event.preventDefault();
 
         // 切換按鈕樣式

@@ -428,14 +428,35 @@ function renderPayersAndSplitters(users, expense = null) {
 
     // --- 事件綁定 ---
 
-    // 監聽支付者勾選：連動啟用輸入框
+    // 監聽支付者勾選：連動啟用輸入框 + 智慧餘額填入
     document.querySelectorAll('.payer-checkbox').forEach(cb => {
         cb.addEventListener('change', (e) => {
-            const input = e.target.closest('.payer-row').querySelector('.payer-amount');
+            const row = e.target.closest('.payer-row');
+            const input = row.querySelector('.payer-amount');
             input.disabled = !e.target.checked;
-            // 如果勾選且欄位為空，自動帶入主金額 (方便單人支付)
-            if (e.target.checked && !input.value) {
-                input.value = document.getElementById('amount').value || '';
+            
+            if (e.target.checked) {
+                // 如果勾選且欄位為空，智慧計算餘額
+                if (!input.value || parseFloat(input.value) === 0) {
+                    const totalAmount = parseFloat(document.getElementById('amount').value) || 0;
+                    
+                    // 計算目前「其他」已填寫的金額總和
+                    let currentPaidSum = 0;
+                    document.querySelectorAll('.payer-row').forEach(otherRow => {
+                        const otherCB = otherRow.querySelector('.payer-checkbox');
+                        const otherInput = otherRow.querySelector('.payer-amount');
+                        // 排除正在勾選的這一個，加總其他已勾選且有值的
+                        if (otherCB.checked && otherRow !== row) {
+                            currentPaidSum += parseFloat(otherInput.value) || 0;
+                        }
+                    });
+                    
+                    // 填入剩餘差額 (不小於 0)
+                    const remaining = Math.max(0, totalAmount - currentPaidSum);
+                    input.value = remaining > 0 ? remaining : '';
+                }
+            } else {
+                input.value = ''; // 取消勾選時清空金額
             }
         });
     });

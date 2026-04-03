@@ -15,6 +15,7 @@ export async function fetchExpenses() {
             ),
             expense_splitters (
                 user_id,
+                share_count,
                 users (name)
             )
         `)
