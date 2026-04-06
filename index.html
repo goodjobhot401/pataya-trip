@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pattaya 2026 0710-0713 輔大廣告20屆男子泰國行</title>
+  <title>Pattaya 2026 0710-0713 FJUAD 20th 男子泰國行</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
       <div class="header-content container">
         <div class="logo-area">
           <span class="badge">PATAYA 2026 0710-0713</span>
-          <h1>輔大廣告20屆 男子泰國行</h1>
+          <h1>FJUAD 20th 男子泰國行</h1>
         </div>
         <nav class="nav-tabs">
           <button class="nav-tab active" data-tab="voting-content"
@@ -94,7 +94,7 @@
 
       <!-- 代付支出分頁 -->
       <div id="expense-content" class="hidden">
-        
+
         <!-- 數據驗證錯誤警告 (防呆用) -->
         <div id="data-validation-error" class="hidden"></div>
 
@@ -131,10 +131,11 @@
           <div class="section-header header-flex">
             <h2 class="section-title">⚖️ 結算總覽</h2>
             <div class="header-action-group">
-                <select id="settlement-base-currency" class="base-currency-select" onchange="window.handleBaseCurrencyChange(this.value)">
-                    <!-- 由 JS 動態填充幣別 -->
-                </select>
-                <div class="header-rate-info"></div>
+              <select id="settlement-base-currency" class="base-currency-select"
+                onchange="window.handleBaseCurrencyChange(this.value)">
+                <!-- 由 JS 動態填充幣別 -->
+              </select>
+              <div class="header-rate-info"></div>
             </div>
           </div>
           <div id="expense-summary" class="card settlement-card">
@@ -147,10 +148,11 @@
           <div class="section-header header-flex">
             <h2 class="section-title">👤 個人帳務 <small>我在這趟旅行中的資產淨值</small></h2>
             <div class="header-action-group">
-                <select id="personal-base-currency" class="base-currency-select" onchange="window.handleBaseCurrencyChange(this.value)">
-                    <!-- 由 JS 動態填充幣別 -->
-                </select>
-                <div class="header-rate-info"></div>
+              <select id="personal-base-currency" class="base-currency-select"
+                onchange="window.handleBaseCurrencyChange(this.value)">
+                <!-- 由 JS 動態填充幣別 -->
+              </select>
+              <div class="header-rate-info"></div>
             </div>
           </div>
           <div id="personal-settlement" class="card settlement-card">
@@ -217,28 +219,30 @@
     </div>
   </div>
 
-    <!-- 匯率管理彈出視窗 -->
-    <div id="rate-modal" class="modal hidden">
-      <div class="modal-content card" style="max-width: 400px;">
-        <h2>⚙️ 幣別匯率管理</h2>
-        <div id="rate-management-list" class="rate-mgmt-list">
-          <!-- JS 動態生成幣別列表 -->
+  <!-- 匯率管理彈出視窗 -->
+  <div id="rate-modal" class="modal hidden">
+    <div class="modal-content card" style="max-width: 400px;">
+      <h2>⚙️ 幣別匯率管理</h2>
+      <div id="rate-management-list" class="rate-mgmt-list">
+        <!-- JS 動態生成幣別列表 -->
+      </div>
+      <div class="rate-add-section">
+        <h4>➕ 新增幣別</h4>
+        <div class="form-row">
+          <input type="text" id="new-curr-code" placeholder="代碼 (如 USD)" maxlength="3"
+            style="text-transform: uppercase;">
+          <input type="number" id="new-curr-rate" placeholder="對 TWD 匯率" step="0.001">
         </div>
-        <div class="rate-add-section">
-          <h4>➕ 新增幣別</h4>
-          <div class="form-row">
-            <input type="text" id="new-curr-code" placeholder="代碼 (如 USD)" maxlength="3" style="text-transform: uppercase;">
-            <input type="number" id="new-curr-rate" placeholder="對 TWD 匯率" step="0.001">
-          </div>
-          <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="window.addNewCurrency()">新增幣別並存檔</button>
-        </div>
-        <div class="modal-actions" style="margin-top: 30px;">
-          <button type="button" class="btn btn-secondary" onclick="window.closeRateModal()">關閉</button>
-        </div>
+        <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 10px;"
+          onclick="window.addNewCurrency()">新增幣別並存檔</button>
+      </div>
+      <div class="modal-actions" style="margin-top: 30px;">
+        <button type="button" class="btn btn-secondary" onclick="window.closeRateModal()">關閉</button>
       </div>
     </div>
+  </div>
 
-    <!-- Supabase CDN -->
+  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="./src/main.js"></script>
 </body>
