@@ -1831,3 +1831,83 @@ textarea {
     font-size: 1.1rem;
   }
 }
+
+/* --- 結算總覽 RWD 優化 (解決截圖中的擠壓問題) --- */
+@media (max-width: 600px) {
+  /* 1. 調整結算建議條的佈局 */
+  .settle-row {
+    flex-wrap: nowrap !important; /* 強制不換行 */
+    gap: 5px !important;
+    padding: 12px 10px !important;
+    justify-content: flex-start !important;
+  }
+
+  .settle-name {
+    font-size: 0.85rem !important;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 0; /* 防止名字被壓縮 */
+  }
+
+  .settle-arrow {
+    font-size: 0.7rem !important;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    min-width: 40px;
+    flex-shrink: 0;
+  }
+
+  .settle-amount {
+    font-size: 0.95rem !important;
+    margin-left: auto !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* 2. 調整個人帳務的藥丸背景 */
+  .personal-summary-grid {
+    grid-template-columns: 1fr !important; /* 改為單直欄 */
+    gap: 15px !important;
+  }
+
+  /* 3. 支出明細列表手機版優化 */
+  .expense-main {
+    flex-direction: column !important; /* 金額與標題垂直排列 */
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .expense-amount {
+    font-size: 1.5rem !important;
+    align-self: flex-end; /* 金額靠右對齊增加質感 */
+  }
+
+  .expense-meta {
+    flex-direction: column;
+    gap: 5px !important;
+  }
+}
+
+/* --- Modal 專屬 RWD 固定 --- */
+@media (max-width: 480px) {
+  .modal {
+    padding: 10px !important; /* 縮小外部間距 */
+  }
+
+  .modal-content {
+    padding: 25px 15px !important;
+    width: 100% !important;
+    max-height: 90vh !important; /* 讓內容在手機上顯示更多 */
+    border-radius: 20px !important;
+  }
+
+  /* 讓分帳名單在手機上更緊湊 */
+  .splitter-row {
+    padding: 6px 0 !important;
+  }
+}
