@@ -294,24 +294,30 @@ document.getElementById('recommendation-form')?.addEventListener('submit', async
     e.preventDefault();
     const formData = getRecommendationFormData();
     
-    // 如果有爬取到的圖片，使用它們；否則使用空陣列
+    // 嚴格從暫存資料或現有資料中取得圖片清單
+    const finalImageUrls = tempCrawledData ? tempCrawledData.image_urls : [];
+    
     const finalData = {
         url: formData.url,
         name: formData.name,
         location: formData.location,
         description: formData.description,
-        image_urls: tempCrawledData ? tempCrawledData.image_urls : [],
+        image_urls: finalImageUrls,
         created_by: currentUser.id
     };
 
+    console.log('正在儲存推薦資料...', { id: formData.id, imagesCount: finalImageUrls.length });
+
     try {
-        if (formData.id) {
+        if (formData.id && formData.id !== "") {
             // 編輯模式
-            delete finalData.created_by; // 編輯時不更改建立者
+            delete finalData.created_by; 
             await updateRecommendation(formData.id, finalData);
+            console.log('更新成功！');
         } else {
             // 新增模式
             await createRecommendation(finalData);
+            console.log('新增成功！');
         }
         
         closeRecommendationModal();
