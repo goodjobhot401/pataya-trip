@@ -226,10 +226,10 @@ export function updateImagePreviews(urls, onImageRemove) {
 export function getRecommendationFormData() {
     const form = document.getElementById('recommendation-form');
     return {
+        id: form.querySelector('#rec-id').value,
         url: form.querySelector('#rec-url').value,
         name: form.querySelector('#rec-name').value,
         location: form.querySelector('#rec-location').value,
         description: form.querySelector('#rec-description').value,
-        // 圖片由外部傳入或從預覽狀態取得
     };
 }
