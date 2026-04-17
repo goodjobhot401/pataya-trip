@@ -3,7 +3,7 @@ import { handleLogin, getAllUsers } from './services/auth';
 import { fetchAccommodations, fetchUserVotes, fetchAllVotes, castVote, deleteVote } from './services/voting';
 import { fetchExpenses, createExpense, updateExpense, deleteExpense } from './services/expenses';
 import { fetchTripSettings, updateExchangeRates } from './services/settings';
-import { fetchRecommendations, createRecommendation, deleteRecommendation, crawlUrl } from './services/recommendationService';
+import { fetchRecommendations, createRecommendation, updateRecommendation, deleteRecommendation, crawlUrl } from './services/recommendationService';
 import { renderAccommodations, updateVoteDots } from './ui/votingUI';
 import { renderStats, renderUserProgress } from './ui/statsUI';
 import {
