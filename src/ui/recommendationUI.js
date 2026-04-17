@@ -57,8 +57,11 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
             ${rec.location ? `<div class="card-location">📍 ${rec.location}</div>` : ''}
             ${rec.description ? `<p class="card-description">${rec.description}</p>` : ''}
             
-            <div class="card-actions" style="justify-content: flex-end; border-top: none; padding-top: 0; margin-top: 15px;">
-                <button class="btn btn-delete btn-icon-styled" data-id="${rec.id}">
+            <div class="card-actions" style="justify-content: flex-end; border-top: none; padding-top: 0; margin-top: 15px; gap: 10px;">
+                <button class="btn btn-secondary btn-icon-styled btn-edit" data-id="${rec.id}" style="padding: 5px 12px; font-size: 0.85rem;">
+                    ✏️ 編輯
+                </button>
+                <button class="btn btn-delete btn-icon-styled" data-id="${rec.id}" style="padding: 5px 12px; font-size: 0.85rem;">
                     🗑️ 刪除
                 </button>
             </div>
@@ -82,6 +85,15 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
     // 綁定 Carousel 邏輯
     if (hasMultipleImages) {
         setupCarousel(card);
+    }
+
+    // 綁定編輯邏輯
+    const editBtn = card.querySelector('.btn-edit');
+    if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onEditClick(rec);
+        });
     }
 
     // 綁定刪除邏輯
@@ -161,10 +173,27 @@ function setupCarousel(card) {
 }
 
 // Modal 控制
-export function openRecommendationModal() {
-    document.getElementById('recommendation-modal').classList.remove('hidden');
-    document.getElementById('recommendation-form').reset();
-    document.getElementById('rec-preview-images').innerHTML = '<span style="color: #ccc;">尚未抓取圖片</span>';
+export function openRecommendationModal(rec = null) {
+    const modal = document.getElementById('recommendation-modal');
+    const form = document.getElementById('recommendation-form');
+    const title = modal.querySelector('h2');
+    
+    modal.classList.remove('hidden');
+    form.reset();
+    
+    if (rec) {
+        title.textContent = '✏️ 編輯推薦景點';
+        form.querySelector('#rec-id').value = rec.id;
+        form.querySelector('#rec-url').value = rec.url;
+        form.querySelector('#rec-name').value = rec.name;
+        form.querySelector('#rec-location').value = rec.location || '';
+        form.querySelector('#rec-description').value = rec.description || '';
+        // 預覽圖片區域會由外部根據 rec.image_urls 渲染
+    } else {
+        title.textContent = '🌏 推薦新地點';
+        form.querySelector('#rec-id').value = '';
+        document.getElementById('rec-preview-images').innerHTML = '<span style="color: #ccc;">尚未抓取圖片</span>';
+    }
 }
 
 export function closeRecommendationModal() {

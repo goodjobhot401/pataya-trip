@@ -155,7 +155,7 @@ async function handleUpdateExchangeRate(newRates) {
 
 // --- 推薦邏輯 ---
 function renderRecommendationsTab() {
-    renderRecommendationList(allRecommendations, currentUser?.id, handleDeleteRecommendation);
+    renderRecommendationList(allRecommendations, currentUser?.id, handleDeleteRecommendation, handleEditRecommendation);
 }
 
 // --- 全域工具：自定義確認彈窗 ---
@@ -211,6 +211,7 @@ window.openExpenseModal = () => openExpenseModal(null, allUsers);
 window.closeExpenseModal = () => closeExpenseModal();
 window.handleEditExpense = (id) => handleEditExpense(id);
 window.handleDeleteExpense = (id) => handleDeleteExpense(id);
+window.handleEditRecommendation = (id) => handleEditRecommendation(id);
 
 window.openRecommendationModal = () => openRecommendationModal();
 window.closeRecommendationModal = () => closeRecommendationModal();
@@ -238,22 +239,20 @@ document.getElementById('btn-crawl')?.addEventListener('click', async () => {
         }
         
         // 預覽圖片，並提供刪除回呼
-        updateImagePreviews(tempCrawledData.image_urls, (index) => {
-            // 新增：誤刪防護
-            if (confirm('確定要移除這張圖片預覽嗎？')) {
-                // 從暫存資料中移除該圖片
-                tempCrawledData.image_urls.splice(index, 1);
-                
-                // 重新渲染預覽（遞迴呼叫自己來更新索引）
-                const currentCallback = (idx) => {
-                    if (confirm('確定要移除這張圖片預覽嗎？')) {
-                        tempCrawledData.image_urls.splice(idx, 1);
-                        updateImagePreviews(tempCrawledData.image_urls, currentCallback);
+        const renderPreviews = () => {
+            updateImagePreviews(tempCrawledData.image_urls, (index) => {
+                window.showConfirm({
+                    title: '移除圖片？',
+                    message: '你確定不要這張圖片嗎？',
+                    icon: '🖼️',
+                    onConfirm: () => {
+                        tempCrawledData.image_urls.splice(index, 1);
+                        renderPreviews();
                     }
-                };
-                updateImagePreviews(tempCrawledData.image_urls, currentCallback);
-            }
-        });
+                });
+            });
+        };
+        renderPreviews();
     } catch (err) {
         alert('爬取失敗：' + err.message + '\n請手動輸入資訊。');
         updateImagePreviews([]);
@@ -263,6 +262,33 @@ document.getElementById('btn-crawl')?.addEventListener('click', async () => {
     }
 });
 
+async function handleEditRecommendation(recommendation) {
+    // 進入編輯模式，將現有資料存入暫存，供預覽使用
+    tempCrawledData = {
+        title: recommendation.name,
+        image_urls: [...recommendation.image_urls] // 深拷貝
+    };
+    
+    // 開啟 Modal 並填入資料
+    openRecommendationModal(recommendation);
+    
+    // 渲染現有圖片的預覽圖與刪除功能
+    const renderPreviews = () => {
+        updateImagePreviews(tempCrawledData.image_urls, (index) => {
+            window.showConfirm({
+                title: '移除圖片？',
+                message: '你確定不要這張圖片嗎？',
+                icon: '🖼️',
+                onConfirm: () => {
+                    tempCrawledData.image_urls.splice(index, 1);
+                    renderPreviews();
+                }
+            });
+        });
+    };
+    renderPreviews();
+}
+
 // 處理推薦表單提交
 document.getElementById('recommendation-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -270,13 +296,24 @@ document.getElementById('recommendation-form')?.addEventListener('submit', async
     
     // 如果有爬取到的圖片，使用它們；否則使用空陣列
     const finalData = {
-        ...formData,
+        url: formData.url,
+        name: formData.name,
+        location: formData.location,
+        description: formData.description,
         image_urls: tempCrawledData ? tempCrawledData.image_urls : [],
         created_by: currentUser.id
     };
 
     try {
-        await createRecommendation(finalData);
+        if (formData.id) {
+            // 編輯模式
+            delete finalData.created_by; // 編輯時不更改建立者
+            await updateRecommendation(formData.id, finalData);
+        } else {
+            // 新增模式
+            await createRecommendation(finalData);
+        }
+        
         closeRecommendationModal();
         tempCrawledData = null;
         await refreshData();
@@ -315,14 +352,19 @@ async function handleEditExpense(id) {
 }
 
 async function handleDeleteExpense(id) {
-    if (confirm('確定要刪除這筆支出嗎？此動作無法復原。')) {
-        try {
-            await deleteExpense(id);
-            await refreshData();
-        } catch (err) {
-            alert('刪除失敗：' + err.message);
+    window.showConfirm({
+        title: '確定要刪除這筆支出？',
+        message: '此動作無法復原。',
+        icon: '💸',
+        onConfirm: async () => {
+            try {
+                await deleteExpense(id);
+                await refreshData();
+            } catch (err) {
+                alert('刪除失敗：' + err.message);
+            }
         }
-    }
+    });
 }
 
 // --- 通用 UI 邏輯 ---

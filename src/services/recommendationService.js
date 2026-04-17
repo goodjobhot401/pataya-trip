@@ -19,6 +19,15 @@ export async function createRecommendation(data) {
     if (error) throw error;
 }
 
+export async function updateRecommendation(id, data) {
+    const { error } = await supabase
+        .from('recommendations')
+        .update(data)
+        .eq('id', id);
+    
+    if (error) throw error;
+}
+
 export async function deleteRecommendation(recommendation) {
     const { id, image_urls } = recommendation;
 
