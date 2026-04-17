@@ -158,19 +158,52 @@ function renderRecommendationsTab() {
     renderRecommendationList(allRecommendations, currentUser?.id, handleDeleteRecommendation);
 }
 
-async function handleDeleteRecommendation(id) {
-    if (confirm('確定要刪除這個推薦嗎？')) {
-        try {
-            // 找到該筆推薦的完整資料（為了拿到 image_urls）
-            const rec = (allRecommendations || []).find(r => r.id === id);
-            if (!rec) return;
+// --- 全域工具：自定義確認彈窗 ---
+window.showConfirm = function (options) {
+    const { title, message, icon, onConfirm } = options;
+    const modal = document.getElementById('confirm-modal');
+    const titleEl = document.getElementById('confirm-title');
+    const msgEl = document.getElementById('confirm-message');
+    const iconEl = document.getElementById('confirm-icon');
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
 
-            await deleteRecommendation(rec);
-            await refreshData();
-        } catch (err) {
-            alert('刪除失敗：' + err.message);
+    titleEl.textContent = title || '確認操作';
+    msgEl.textContent = message || '';
+    iconEl.textContent = icon || '⚠️';
+    modal.classList.remove('hidden');
+
+    // 清除舊的事件監聽（透過複製元素）
+    const newOkBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+    newOkBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+    };
+    newCancelBtn.onclick = () => {
+        modal.classList.add('hidden');
+    };
+};
+
+async function handleDeleteRecommendation(id) {
+    window.showConfirm({
+        title: '確定要刪除嗎？',
+        message: '此動作將同步刪除雲端圖片，且無法復原。',
+        icon: '🗑️',
+        onConfirm: async () => {
+            try {
+                const rec = (allRecommendations || []).find(r => r.id === id);
+                if (!rec) return;
+                await deleteRecommendation(rec);
+                await refreshData();
+            } catch (err) {
+                alert('刪除失敗：' + err.message);
+            }
         }
-    }
+    });
 }
 
 // 註冊全域 UI 函式 (供 HTML onclick 調用)
@@ -204,8 +237,23 @@ document.getElementById('btn-crawl')?.addEventListener('click', async () => {
             if (nameEl) nameEl.value = tempCrawledData.title;
         }
         
-        // 預覽圖片
-        updateImagePreviews(tempCrawledData.image_urls);
+        // 預覽圖片，並提供刪除回呼
+        updateImagePreviews(tempCrawledData.image_urls, (index) => {
+            // 新增：誤刪防護
+            if (confirm('確定要移除這張圖片預覽嗎？')) {
+                // 從暫存資料中移除該圖片
+                tempCrawledData.image_urls.splice(index, 1);
+                
+                // 重新渲染預覽（遞迴呼叫自己來更新索引）
+                const currentCallback = (idx) => {
+                    if (confirm('確定要移除這張圖片預覽嗎？')) {
+                        tempCrawledData.image_urls.splice(idx, 1);
+                        updateImagePreviews(tempCrawledData.image_urls, currentCallback);
+                    }
+                };
+                updateImagePreviews(tempCrawledData.image_urls, currentCallback);
+            }
+        });
     } catch (err) {
         alert('爬取失敗：' + err.message + '\n請手動輸入資訊。');
         updateImagePreviews([]);

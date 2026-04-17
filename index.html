@@ -304,6 +304,18 @@
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="./src/main.js"></script>
+  <!-- 自定義確認彈窗 (取代 browser confirm) -->
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-content card" style="max-width: 400px; text-align: center; padding: 30px;">
+      <div id="confirm-icon" style="font-size: 3rem; margin-bottom: 20px;">⚠️</div>
+      <h2 id="confirm-title" style="margin-bottom: 15px;">確認操作</h2>
+      <p id="confirm-message" style="color: #666; margin-bottom: 30px; line-height: 1.6;"></p>
+      <div class="modal-actions" style="justify-content: center; gap: 15px;">
+        <button id="confirm-cancel" class="btn btn-secondary" style="min-width: 100px;">取消</button>
+        <button id="confirm-ok" class="btn btn-primary" style="min-width: 100px; background: #ff4d4f;">確定</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

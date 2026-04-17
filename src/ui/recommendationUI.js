@@ -30,7 +30,7 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
         // 建立 Carousel
         const dots = images.map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`).join('');
         const tracks = images.map(url => `<img src="${url}" alt="${rec.name}">`).join('');
-        
+
         imageHtml = `
             <div class="card-carousel">
                 <div class="carousel-track" style="transform: translateX(0%);">
@@ -49,8 +49,6 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
         `;
     }
 
-    const isCreator = rec.created_by === currentUserId;
-
     card.style.cursor = 'pointer'; // 讓使用者知道整張卡片可點擊
     card.innerHTML = `
         ${imageHtml}
@@ -60,11 +58,9 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
             ${rec.description ? `<p class="card-description">${rec.description}</p>` : ''}
             
             <div class="card-actions" style="justify-content: flex-end; border-top: none; padding-top: 0; margin-top: 15px;">
-                ${isCreator ? `
-                    <button class="btn btn-delete btn-icon-styled" data-id="${rec.id}">
-                        🗑️ 刪除
-                    </button>
-                ` : ''}
+                <button class="btn btn-delete btn-icon-styled" data-id="${rec.id}">
+                    🗑️ 刪除
+                </button>
             </div>
 
             <div class="recommendation-footer">
@@ -175,13 +171,27 @@ export function closeRecommendationModal() {
     document.getElementById('recommendation-modal').classList.add('hidden');
 }
 
-export function updateImagePreviews(urls) {
+export function updateImagePreviews(urls, onImageRemove) {
     const container = document.getElementById('rec-preview-images');
     if (urls.length === 0) {
         container.innerHTML = '<span style="color: #ff6b6b;">無法抓取圖片，請手動輸入資訊</span>';
         return;
     }
-    container.innerHTML = urls.map(url => `<img src="${url}" class="preview-img">`).join('');
+    
+    container.innerHTML = urls.map((url, index) => `
+        <div class="preview-img-container">
+            <img src="${url}" class="preview-img">
+            <button type="button" class="btn-remove-preview" data-index="${index}">✕</button>
+        </div>
+    `).join('');
+
+    // 綁定 X 按鈕的點擊事件
+    container.querySelectorAll('.btn-remove-preview').forEach(btn => {
+        btn.onclick = (e) => {
+            const idx = parseInt(e.target.dataset.index);
+            onImageRemove(idx);
+        };
+    });
 }
 
 export function getRecommendationFormData() {
