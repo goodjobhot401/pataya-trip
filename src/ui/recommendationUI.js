@@ -51,15 +51,15 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
 
     const isCreator = rec.created_by === currentUserId;
 
+    card.style.cursor = 'pointer'; // 讓使用者知道整張卡片可點擊
     card.innerHTML = `
         ${imageHtml}
         <div class="card-content">
             <h3 class="card-title">${rec.name}</h3>
             ${rec.location ? `<div class="card-location">📍 ${rec.location}</div>` : ''}
-            <p class="card-description">${rec.description || '無描述'}</p>
+            ${rec.description ? `<p class="card-description">${rec.description}</p>` : ''}
             
-            <div class="card-actions">
-                <a href="${rec.url}" target="_blank" class="btn btn-link">🔗 查看原始連結</a>
+            <div class="card-actions" style="justify-content: flex-end; border-top: none; padding-top: 0; margin-top: 15px;">
                 ${isCreator ? `
                     <button class="btn btn-delete btn-icon-styled" data-id="${rec.id}">
                         🗑️ 刪除
@@ -74,6 +74,15 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
         </div>
     `;
 
+    // 綁定整張卡片的點擊事件 (開新分頁)
+    card.addEventListener('click', (e) => {
+        // 如果點擊的是刪除按鈕或輪播按鈕，則不執行開啟連結
+        if (e.target.closest('.btn-delete') || e.target.closest('.btn-carousel-nav') || e.target.closest('.carousel-dot')) {
+            return;
+        }
+        window.open(rec.url, '_blank');
+    });
+
     // 綁定 Carousel 邏輯
     if (hasMultipleImages) {
         setupCarousel(card);
@@ -82,7 +91,10 @@ function createRecommendationCard(rec, currentUserId, onDeleteClick) {
     // 綁定刪除邏輯
     const deleteBtn = card.querySelector('.btn-delete');
     if (deleteBtn) {
-        deleteBtn.addEventListener('click', () => onDeleteClick(rec.id));
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止觸發卡片點擊
+            onDeleteClick(rec.id);
+        });
     }
 
     return card;
