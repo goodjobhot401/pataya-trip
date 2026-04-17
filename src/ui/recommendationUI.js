@@ -107,6 +107,7 @@ function setupCarousel(card) {
     const nextBtn = card.querySelector('.nav-next');
     const imgCount = dots.length;
     let currentIndex = 0;
+    let autoPlayTimer = null;
 
     const updateCarousel = (index) => {
         currentIndex = (index + imgCount) % imgCount;
@@ -116,19 +117,48 @@ function setupCarousel(card) {
         });
     };
 
+    // 自動輪播邏輯
+    const startAutoPlay = () => {
+        if (autoPlayTimer) return;
+        autoPlayTimer = setInterval(() => {
+            updateCarousel(currentIndex + 1);
+        }, 3500 + Math.random() * 1500); // 隨機錯開每張卡片的切換時間，讓視覺更自然且減輕瀏覽器瞬間負擔
+    };
+
+    const stopAutoPlay = () => {
+        if (autoPlayTimer) {
+            clearInterval(autoPlayTimer);
+            autoPlayTimer = null;
+        }
+    };
+
+    // 初始化自動輪播
+    startAutoPlay();
+
+    // 互動控制：滑鼠移入時暫停，移出時恢復
+    card.addEventListener('mouseenter', stopAutoPlay);
+    card.addEventListener('mouseleave', startAutoPlay);
+
+    // 手動按鈕控制
     prevBtn.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
+        stopAutoPlay(); // 手動操作時先停止，避免剛切換完又被定時器切換
         updateCarousel(currentIndex - 1);
     });
 
     nextBtn.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
+        stopAutoPlay();
         updateCarousel(currentIndex + 1);
     });
 
     dots.forEach(dot => {
         dot.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            stopAutoPlay();
             updateCarousel(parseInt(dot.dataset.index));
         });
     });
