@@ -1,6 +1,6 @@
 // src/ui/recommendationUI.js
 
-export function renderRecommendationList(recommendations, currentUserId, onDeleteClick) {
+export function renderRecommendationList(recommendations, currentUserId, onDeleteClick, onEditClick) {
     const container = document.getElementById('recommendation-list');
     if (!container) return;
 
@@ -11,12 +11,12 @@ export function renderRecommendationList(recommendations, currentUserId, onDelet
 
     container.innerHTML = '';
     recommendations.forEach(rec => {
-        const card = createRecommendationCard(rec, currentUserId, onDeleteClick);
+        const card = createRecommendationCard(rec, currentUserId, onDeleteClick, onEditClick);
         container.appendChild(card);
     });
 }
 
-function createRecommendationCard(rec, currentUserId, onDeleteClick) {
+function createRecommendationCard(rec, currentUserId, onDeleteClick, onEditClick) {
     const card = document.createElement('div');
     card.className = 'card';
 
