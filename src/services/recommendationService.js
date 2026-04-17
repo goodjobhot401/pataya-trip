@@ -32,19 +32,35 @@ export async function deleteRecommendation(id) {
  * 呼叫爬蟲後端 (假設本地運行在 :3001)
  */
 export async function crawlUrl(url) {
-    // 我們可以動態決定 API URL，開發環境可能是 localhost:3001
-    const API_URL = 'http://localhost:3001/api/crawl';
+    // 配合後端新設定的埠號 3003
+    const API_URL = 'http://localhost:3003/api/crawl';
     
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-    });
-    
-    if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || '爬取失敗');
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+        
+        if (!response.ok) {
+            // 嘗試解析錯誤訊息
+            let errorMsg = '爬取失敗';
+            try {
+                const err = await response.json();
+                errorMsg = err.message || errorMsg;
+            } catch (e) {
+                errorMsg = `伺服器連線異常 (代碼: ${response.status})`;
+            }
+            throw new Error(errorMsg);
+        }
+        
+        return await response.json();
+    } catch (err) {
+        console.error("Crawl Error:", err);
+        // 如果是連線失敗，通常是伺服器沒開
+        if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+            throw new Error("無法連線到本地爬蟲服務，請確認已執行 `node server/index.js` 且正在運行。");
+        }
+        throw err;
     }
-    
-    return await response.json();
 }
