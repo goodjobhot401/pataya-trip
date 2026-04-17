@@ -1912,3 +1912,128 @@ textarea {
     padding: 6px 0 !important;
   }
 }
+/* --- 行程推薦專屬樣式 --- */
+.preview-images-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+  min-height: 100px;
+  border: 2px dashed #eee;
+  border-radius: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 推薦卡片內的 Mini Carousel */
+.card-carousel {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+}
+
+.carousel-track img {
+  width: 100%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.carousel-nav {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.carousel-dot.active {
+  background: var(--white);
+  transform: scale(1.3);
+}
+
+.btn-carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  backdrop-filter: blur(4px);
+  transition: var(--transition);
+  opacity: 0;
+}
+
+.card-carousel:hover .btn-carousel-nav {
+  opacity: 1;
+}
+
+.btn-carousel-nav:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.nav-prev { left: 10px; }
+.nav-next { right: 10px; }
+
+.card-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+.card-description {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: #444;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.recommendation-footer {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #999;
+}

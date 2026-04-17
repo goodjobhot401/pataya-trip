@@ -3,10 +3,19 @@ import { handleLogin, getAllUsers } from './services/auth';
 import { fetchAccommodations, fetchUserVotes, fetchAllVotes, castVote, deleteVote } from './services/voting';
 import { fetchExpenses, createExpense, updateExpense, deleteExpense } from './services/expenses';
 import { fetchTripSettings, updateExchangeRates } from './services/settings';
+import { fetchRecommendations, createRecommendation, deleteRecommendation, crawlUrl } from './services/recommendationService';
 import { renderAccommodations, updateVoteDots } from './ui/votingUI';
 import { renderStats, renderUserProgress } from './ui/statsUI';
 import {
+    renderRecommendationList,
+    openRecommendationModal,
+    closeRecommendationModal,
+    updateImagePreviews,
+    getRecommendationFormData
+} from './ui/recommendationUI';
+import {
     renderExpenseList,
+// ... existing imports ...
     renderSettlementSummary,
     renderPersonalSettlement,
     openExpenseModal,
@@ -24,8 +33,10 @@ let currentVotes = [];
 let allAccommodations = [];
 let allUsers = [];
 let allExpenses = [];
+let allRecommendations = []; // 新增：收容推薦資料
 let tripSettings = {};
 let currentBaseCurrency = 'TWD'; // 當前結算基準幣別
+let tempCrawledData = null; // 暫存爬取到的資料
 
 // ... (setupApp and refreshData omitted for brevity if they don't change much, but I'll update renderExpensesTab)
 
@@ -72,12 +83,14 @@ async function refreshData() {
 
     // 獲取支出與設定
     allExpenses = await fetchExpenses();
+    allRecommendations = await fetchRecommendations(); // 新增
     tripSettings = await fetchTripSettings();
 
     // 渲染各分頁
     renderVotingTab();
     renderStatsTab(allVotes);
     renderExpensesTab();
+    renderRecommendationsTab(); // 新增
 }
 
 // --- 投票邏輯 ---
@@ -140,11 +153,85 @@ async function handleUpdateExchangeRate(newRates) {
     }
 }
 
+// --- 推薦邏輯 ---
+function renderRecommendationsTab() {
+    renderRecommendationList(allRecommendations, currentUser?.id, handleDeleteRecommendation);
+}
+
+async function handleDeleteRecommendation(id) {
+    if (confirm('確定要刪除這個推薦嗎？')) {
+        try {
+            await deleteRecommendation(id);
+            await refreshData();
+        } catch (err) {
+            alert('刪除失敗：' + err.message);
+        }
+    }
+}
+
 // 註冊全域 UI 函式 (供 HTML onclick 調用)
 window.openExpenseModal = () => openExpenseModal(null, allUsers);
 window.closeExpenseModal = () => closeExpenseModal();
 window.handleEditExpense = (id) => handleEditExpense(id);
 window.handleDeleteExpense = (id) => handleDeleteExpense(id);
+
+window.openRecommendationModal = () => openRecommendationModal();
+window.closeRecommendationModal = () => closeRecommendationModal();
+
+// 處理爬取按鈕
+document.getElementById('btn-crawl')?.addEventListener('click', async () => {
+    const url = document.getElementById('rec-url').value;
+    if (!url) {
+        alert('請先輸入網址');
+        return;
+    }
+
+    const btn = document.getElementById('btn-crawl');
+    const originalText = btn.textContent;
+    btn.textContent = '爬取中...';
+    btn.disabled = true;
+
+    try {
+        tempCrawledData = await crawlUrl(url);
+        
+        // 自動填入名稱
+        if (tempCrawledData.title) {
+            const nameEl = document.getElementById('rec-name');
+            if (nameEl) nameEl.value = tempCrawledData.title;
+        }
+        
+        // 預覽圖片
+        updateImagePreviews(tempCrawledData.image_urls);
+    } catch (err) {
+        alert('爬取失敗：' + err.message + '\n請手動輸入資訊。');
+        updateImagePreviews([]);
+    } finally {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }
+});
+
+// 處理推薦表單提交
+document.getElementById('recommendation-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = getRecommendationFormData();
+    
+    // 如果有爬取到的圖片，使用它們；否則使用空陣列
+    const finalData = {
+        ...formData,
+        image_urls: tempCrawledData ? tempCrawledData.image_urls : [],
+        created_by: currentUser.id
+    };
+
+    try {
+        await createRecommendation(finalData);
+        closeRecommendationModal();
+        tempCrawledData = null;
+        await refreshData();
+    } catch (err) {
+        alert('儲存失敗：' + err.message);
+    }
+});
 
 // 處理支出表單提交
 document.getElementById('expense-form').addEventListener('submit', async (e) => {
@@ -197,7 +284,7 @@ function setupTabs() {
         tabs.forEach(t => t.classList.remove('active'));
         if (tabElement) tabElement.classList.add('active');
 
-        ['voting-content', 'stats-content', 'expense-content'].forEach(id => {
+        ['voting-content', 'stats-content', 'expense-content', 'recommendation-content'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.classList.add('hidden');
         });
@@ -205,9 +292,9 @@ function setupTabs() {
         const targetEl = document.getElementById(target);
         if (targetEl) targetEl.classList.remove('hidden');
 
-        // --- 優化：如果是支出分頁，隱藏底部的投票統計 ---
+        // --- 優化：如果是支出或推薦分頁，隱藏底部的投票統計 ---
         const globalStats = document.getElementById('global-stats');
-        if (target === 'expense-content') {
+        if (target === 'expense-content' || target === 'recommendation-content') {
             globalStats.classList.add('hidden');
         } else {
             globalStats.classList.remove('hidden');
