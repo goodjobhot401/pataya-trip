@@ -19,13 +19,37 @@ export async function createRecommendation(data) {
     if (error) throw error;
 }
 
-export async function deleteRecommendation(id) {
-    const { error } = await supabase
+export async function deleteRecommendation(recommendation) {
+    const { id, image_urls } = recommendation;
+
+    // 1. 刪除雲端 Storage 裡的圖片檔案
+    if (image_urls && image_urls.length > 0) {
+        // 從 URL 中提取檔名 (假設 URL 格式為 .../recommendations/filename)
+        const fileNames = image_urls.map(url => {
+            try {
+                const parts = url.split('/');
+                return parts[parts.length - 1].split('?')[0]; // 移除可能的 query string
+            } catch (e) {
+                return null;
+            }
+        }).filter(name => name !== null);
+
+        if (fileNames.length > 0) {
+            const { error: storageError } = await supabase.storage
+                .from('recommendations')
+                .remove(fileNames);
+            
+            if (storageError) console.error('Storage 圖片刪除失敗:', storageError);
+        }
+    }
+
+    // 2. 刪除資料庫紀錄
+    const { error: dbError } = await supabase
         .from('recommendations')
         .delete()
         .eq('id', id);
     
-    if (error) throw error;
+    if (dbError) throw dbError;
 }
 
 /**

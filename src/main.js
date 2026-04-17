@@ -161,7 +161,11 @@ function renderRecommendationsTab() {
 async function handleDeleteRecommendation(id) {
     if (confirm('確定要刪除這個推薦嗎？')) {
         try {
-            await deleteRecommendation(id);
+            // 找到該筆推薦的完整資料（為了拿到 image_urls）
+            const rec = (allRecommendations || []).find(r => r.id === id);
+            if (!rec) return;
+
+            await deleteRecommendation(rec);
             await refreshData();
         } catch (err) {
             alert('刪除失敗：' + err.message);
